@@ -57,14 +57,18 @@ class ScriptDraftViewModel(private val dao: ScriptDraftDao) : ViewModel() {
         saveJob = viewModelScope.launch {
             delay(450)
             val current = _state.value
-            dao.saveDraft(
-                ScriptDraftEntity(
-                    title = current.title,
-                    body = current.body,
-                    updatedAt = System.currentTimeMillis()
+            try {
+                dao.saveDraft(
+                    ScriptDraftEntity(
+                        title = current.title,
+                        body = current.body,
+                        updatedAt = System.currentTimeMillis()
+                    )
                 )
-            )
-            _state.update { it.copy(saveStatus = "SAVED ON THIS DEVICE") }
+                _state.update { it.copy(saveStatus = "SAVED ON THIS DEVICE") }
+            } catch (_: Exception) {
+                _state.update { it.copy(saveStatus = "SAVE FAILED — TRY AGAIN") }
+            }
         }
     }
 }
