@@ -207,6 +207,23 @@ begin
   insert into public.profiles (id, display_name)
   values (new.id, coalesce(new.raw_user_meta_data ->> 'display_name', ''));
   insert into public.user_preferences (user_id) values (new.id);
+
+  -- Every new account starts with a private personal workspace.
+  declare
+    personal_workspace_id uuid;
+  begin
+    insert into public.workspaces (name, workspace_type, owner_id)
+    values (
+      coalesce(nullif(new.raw_user_meta_data ->> 'display_name', ''), 'My') || '''s Workspace',
+      'personal',
+      new.id
+    )
+    returning id into personal_workspace_id;
+
+    insert into public.workspace_members (workspace_id, user_id, role)
+    values (personal_workspace_id, new.id, 'owner');
+  end;
+
   return new;
 end;
 $;
@@ -351,3 +368,23 @@ create policy "workspace_asset_delete_member" on storage.objects for delete to a
 );
 
 create policy "template_preview_public_read" on storage.objects for select to anon, authenticated using (bucket_id = 'template-previews');
+
+
+-- Explicit Data API grants: grants expose the tables; RLS above controls rows.
+grant usage on schema public to anon, authenticated;
+grant select, insert, update on public.profiles to authenticated;
+grant select, insert, update, delete on public.workspaces to authenticated;
+grant select, insert, delete on public.workspace_members to authenticated;
+grant select, insert, update, delete on public.projects to authenticated;
+grant select, insert, update, delete on public.tasks to authenticated;
+grant select, insert, update, delete on public.clients to authenticated;
+grant select, insert, update, delete on public.leads to authenticated;
+grant select, insert, update, delete on public.content_items to authenticated;
+grant select, insert, update, delete on public.assets to authenticated;
+grant select on public.invoices to authenticated;
+grant select on public.invoice_items to authenticated;
+grant select on public.activity_events to authenticated;
+grant select, update on public.notifications to authenticated;
+grant select, insert, update, delete on public.device_tokens to authenticated;
+grant select, insert, update on public.user_preferences to authenticated;
+grant select on public.templates to anon, authenticated;
