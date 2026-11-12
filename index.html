@@ -161,6 +161,66 @@ body.portal-open .portal{opacity:1;visibility:visible}.portal-inner{text-align:c
 .auth-sub{font-family:'Manrope',sans-serif;font-size:12px;font-weight:600;letter-spacing:0}
 @media(max-width:700px){.auth-heading{font-size:36px}.auth-field input{font-size:14px}}
 
+
+/* THE BENKOUGH — signature interface direction */
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
+:root{--ink:#080709;--oxblood:#541321;--garnet:#9e354c;--porcelain:#f4e9e8;--muted:#aa9297;--line:rgba(232,196,199,.18)}
+body{font-family:'Space Grotesk',sans-serif;background:var(--ink)}
+.ambient-layer{background:radial-gradient(ellipse at 82% 22%,rgba(115,26,46,.27),transparent 35%),radial-gradient(ellipse at 12% 88%,rgba(86,18,34,.35),transparent 42%),linear-gradient(125deg,#080709 0%,#160a10 52%,#080709 100%)}
+.smoke{filter:blur(95px);opacity:.34;mix-blend-mode:normal}
+.grain{opacity:.17}.vignette{background:radial-gradient(ellipse at 50% 45%,transparent 15%,rgba(0,0,0,.62) 100%)}
+.brand-stage{width:min(76vw,690px);animation:brand-intro 3.15s cubic-bezier(.16,1,.3,1) .2s forwards}
+.brand-logo{filter:drop-shadow(0 20px 55px rgba(125,30,51,.24))}
+.start-area{gap:22px}
+.eyebrow{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.42em;color:#c7a9ad}
+.start-button{min-width:224px;padding:19px 35px;border-radius:4px;border:1px solid rgba(219,159,169,.48);background:linear-gradient(110deg,#79283c,#39111e);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.28em;box-shadow:0 16px 50px rgba(83,13,32,.35),inset 0 1px 0 rgba(255,255,255,.12)}
+.start-button:hover{transform:translateY(-3px);box-shadow:0 22px 60px rgba(117,25,49,.4)}
+.bottom-mark{font-family:'DM Mono',monospace;letter-spacing:.4em;font-size:8px;color:rgba(229,194,199,.42)}
+.auth-shell{padding:30px;background:radial-gradient(ellipse at 75% 20%,rgba(124,34,55,.16),transparent 42%),rgba(4,3,5,.88);backdrop-filter:blur(26px)}
+.auth-frame{width:min(100%,1040px);min-height:min(690px,calc(100svh - 60px));grid-template-columns:.94fr 1.06fr;border:1px solid rgba(225,182,189,.22);border-radius:3px;background:linear-gradient(135deg,rgba(25,13,18,.98),rgba(9,8,11,.99) 60%);box-shadow:0 50px 130px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.07)}
+.auth-aside{padding:46px 42px;border-right:1px solid var(--line);background:linear-gradient(155deg,rgba(105,26,45,.26),rgba(17,10,14,.05) 68%),repeating-linear-gradient(135deg,transparent 0 42px,rgba(255,255,255,.012) 43px 44px)}
+.auth-aside:before{width:390px;height:390px;left:-205px;bottom:-5%;border-color:rgba(216,155,166,.2);box-shadow:0 0 0 1px rgba(216,155,166,.06),0 0 0 34px rgba(216,155,166,.025),0 0 0 70px rgba(216,155,166,.018)}
+.auth-brand{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.32em;color:#f2e2e3}
+.aside-kicker{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.28em;color:#d28b99}
+.aside-title{font-family:'Playfair Display',serif;font-weight:500;font-size:clamp(48px,5.8vw,76px);line-height:.94;letter-spacing:-.065em;color:#f4e9e8}
+.aside-note{font-family:'Space Grotesk',sans-serif;font-size:13px;line-height:1.9;color:rgba(239,220,223,.62)}
+.aside-foot{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.28em;color:rgba(229,194,199,.42)}
+.auth-main{padding:48px clamp(28px,5vw,68px);background:radial-gradient(ellipse at 100% 0%,rgba(127,39,58,.1),transparent 45%)}
+.auth-topline{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.22em;color:#c4a8ad}
+.auth-close{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.17em;color:#e6cdd1}
+.auth-switch{padding:4px;border:1px solid rgba(225,182,189,.22);border-radius:3px;background:rgba(0,0,0,.3)}
+.auth-switch:before{top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:1px;background:linear-gradient(110deg,#8c3046,#551726);box-shadow:0 7px 22px rgba(103,22,43,.34)}
+.auth-switch button{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.24em;padding:16px 8px}
+.auth-heading{font-family:'Playfair Display',serif;font-weight:500;font-size:clamp(42px,4.8vw,58px);line-height:.98;letter-spacing:-.055em;color:#f6e9e8}
+.auth-sub{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:400;color:#b8a2a6;line-height:1.8}
+.auth-field{margin-bottom:17px}
+.auth-field span{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:.22em;color:#d6b8be}
+.auth-field input{height:54px;padding:0 17px;border:1px solid rgba(225,182,189,.2);border-radius:2px;background:rgba(0,0,0,.3);font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:500;letter-spacing:.015em}
+.auth-field input:focus{border-color:#b65b70;box-shadow:0 0 0 3px rgba(146,43,66,.14),inset 0 0 20px rgba(117,26,46,.08)}
+.auth-submit{height:56px;margin-top:10px;border-radius:2px;border:1px solid rgba(231,174,184,.42);background:linear-gradient(105deg,#8c3046,#541827 72%,#3a111e);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.24em;box-shadow:0 14px 32px rgba(91,19,39,.3)}
+.auth-submit:hover{transform:translateY(-2px);filter:brightness(1.2)}
+.auth-disclaimer{font-family:'DM Mono',monospace;font-size:8px;font-weight:400;letter-spacing:.09em;color:#806e73;line-height:1.8}
+.cross-mark{right:36px;top:116px;width:40px;height:40px;opacity:.32}
+.cross-mark:before,.cross-mark:after{height:40px;background:#d18b99}
+.portal{background:radial-gradient(ellipse at 50% 30%,rgba(105,25,45,.3),transparent 48%),#080709}
+.portal-mark{border-radius:3px;border-color:rgba(225,182,189,.4);font-family:'Playfair Display',serif;font-size:38px;color:#f1d8dc;box-shadow:0 0 0 1px rgba(225,182,189,.07),0 0 70px rgba(130,33,55,.22)}
+.portal-kicker{font-family:'DM Mono',monospace;letter-spacing:.34em}
+.portal-title{font-family:'Playfair Display',serif;font-weight:500;letter-spacing:-.06em}
+.portal-note{font-family:'Space Grotesk',sans-serif;font-size:13px;color:#b8a2a6}
+.portal-back{border-radius:2px;background:linear-gradient(110deg,#79283c,#39111e);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em}
+@media(max-width:700px){
+ .brand-stage{width:min(88vw,600px)}
+ .auth-shell{padding:12px}
+ .auth-frame{border-radius:2px;min-height:0;background:linear-gradient(145deg,rgba(25,13,18,.99),rgba(8,7,9,.99))}
+ .auth-main{min-height:min(720px,calc(100svh - 24px));padding:27px 22px 24px}
+ .auth-heading{font-size:43px}
+ .auth-topline{font-size:8px}
+ .auth-stage{min-height:320px}
+ .auth-field input{height:52px}
+ .cross-mark{right:22px;top:91px}
+}
+@media(max-height:720px) and (min-width:701px){.auth-frame{min-height:570px}.auth-main{padding-top:28px;padding-bottom:28px}.auth-heading{margin-top:20px}.auth-stage{min-height:270px}}
+
   </style>
 </head>
 <body>
