@@ -55,9 +55,7 @@ fun PhoneAuthScreen(onAuthenticated: () -> Unit) {
         ) {
             Text("THE BENKOUGH®", color = AuthIvory, fontSize = 14.sp, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
             Spacer(Modifier.height(18.dp))
-            Text(if (otpSent) "VERIFY YOUR
-NUMBER." else "YOUR WORKSPACE.
-YOUR NUMBER.", color = AuthIvory, fontSize = 34.sp, lineHeight = 38.sp, fontWeight = FontWeight.Black)
+            Text(if (otpSent) "VERIFY YOUR\nNUMBER." else "YOUR WORKSPACE.\nYOUR NUMBER.", color = AuthIvory, fontSize = 34.sp, lineHeight = 38.sp, fontWeight = FontWeight.Black)
             Spacer(Modifier.height(10.dp))
             Text(if (otpSent) "Enter the 6-digit code sent to +91 $phone." else "Sign in securely with a one-time SMS code. No password required.", color = AuthLilac, fontSize = 13.sp, lineHeight = 20.sp)
             Spacer(Modifier.height(26.dp))
@@ -94,7 +92,7 @@ YOUR NUMBER.", color = AuthIvory, fontSize = 34.sp, lineHeight = 38.sp, fontWeig
                         try {
                             if (!otpSent) {
                                 val fullPhone = "+91$phone"
-                                SupabaseProvider.client.auth.signInWith(OTP) { this.phone = fullPhone }
+                                SupabaseProvider.client.gotrue.signInWith(OTP) { this.phone = fullPhone }
                                 otpSent = true
                                 message = "OTP request sent. Check your SMS."
                             } else {
