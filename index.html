@@ -47,11 +47,11 @@
     .start-area { position:absolute; left:0; right:0; bottom:clamp(64px,12vh,112px);
       display:flex; flex-direction:column; align-items:center; gap:18px;
       opacity:0; transform:translateY(18px); animation:show-start 1s cubic-bezier(.2,.8,.2,1) 2.85s forwards; }
-    .eyebrow { color:rgba(235,220,223,.52); font-size:10px; letter-spacing:.34em; text-transform:uppercase; }
+    .eyebrow { font-weight:800; color:rgba(235,220,223,.52); font-size:10px; letter-spacing:.34em; text-transform:uppercase; }
     .start-button { position:relative; min-width:208px; padding:17px 32px; border:1px solid rgba(224,169,177,.38);
       border-radius:999px; color:#f7eef0; background:linear-gradient(135deg,rgba(122,34,50,.94),rgba(66,18,29,.96));
       box-shadow:0 12px 38px rgba(83,19,34,.26),inset 0 1px 0 rgba(255,255,255,.14);
-      font:600 11px/1 inherit; letter-spacing:.25em; cursor:pointer; overflow:hidden;
+      font:800 11px/1 inherit; letter-spacing:.25em; cursor:pointer; overflow:hidden;
       transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease; }
     .start-button::before { content:""; position:absolute; inset:0; transform:translateX(-120%);
       background:linear-gradient(105deg,transparent 25%,rgba(255,255,255,.17) 50%,transparent 75%);
@@ -61,7 +61,7 @@
     .start-button:active { transform:translateY(1px) scale(.985); }
     .start-button span { position:relative; z-index:1; }
     .bottom-mark { position:absolute; bottom:25px; color:rgba(235,220,223,.28);
-      font-size:9px; letter-spacing:.32em; text-transform:uppercase; opacity:0;
+      font-size:9px; font-weight:800; letter-spacing:.32em; text-transform:uppercase; opacity:0;
       animation:fade-in .8s ease 3.3s forwards; }
     @keyframes brand-intro {
       0% { opacity:0; transform:translate(-50%,-50%) scale(1.14); filter:blur(12px); }
