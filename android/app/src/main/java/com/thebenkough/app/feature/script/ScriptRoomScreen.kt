@@ -25,7 +25,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.room.Room
 import com.thebenkough.app.data.local.BenkoughDatabase
 
 private val EditorInk = Color(0xFF17101E)
@@ -37,13 +36,7 @@ private val EditorLime = Color(0xFFDDF27A)
 @Composable
 fun ScriptRoomScreen() {
     val context = LocalContext.current
-    val database = remember(context) {
-        Room.databaseBuilder(
-            context.applicationContext,
-            BenkoughDatabase::class.java,
-            "benkough-local.db"
-        ).build()
-    }
+    val database = remember(context) { BenkoughDatabase.getInstance(context) }
     val draftViewModel: ScriptDraftViewModel = viewModel(
         factory = ScriptDraftViewModelFactory(database.scriptDraftDao())
     )
