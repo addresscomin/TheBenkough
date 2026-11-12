@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">THE BENKOUGH</title>
+  <desc id="desc">A premium platinum geometric monogram and THE BENKOUGH wordmark.</desc>
+  <defs>
+    <linearGradient id="platinum" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".22" stop-color="#aeb8c5"/>
+      <stop offset=".48" stop-color="#f5f7fa"/>
+      <stop offset=".72" stop-color="#788595"/>
+      <stop offset="1" stop-color="#e5eaf0"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f9fbff"/>
+      <stop offset="1" stop-color="#697686"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(70 58)" fill="none" stroke="url(#platinum)" stroke-width="17" stroke-linecap="square" stroke-linejoin="bevel">
+    <path d="M18 18 H178 L258 98 L178 178 H18 Z"/>
+    <path d="M18 178 H178 L258 258 L178 338 H18 Z" opacity=".96"/>
+    <path d="M99 18 V338" stroke="url(#edge)" stroke-width="12" opacity=".9"/>
+    <path d="M99 98 H178 L218 138 L178 178 H99" stroke-width="13"/>
+    <path d="M99 258 H178 L218 298 L178 338 H99" stroke-width="13"/>
+  </g>
+  <g fill="url(#platinum)" font-family="Arial, Helvetica, sans-serif" text-anchor="start">
+    <text x="390" y="194" font-size="42" font-weight="600" letter-spacing="13">THE</text>
+    <text x="385" y="285" font-size="88" font-weight="800" letter-spacing="5">BENKOUGH</text>
+  </g>
+  <path d="M392 316 H1095" stroke="url(#edge)" stroke-width="2" opacity=".65"/>
+</svg>
