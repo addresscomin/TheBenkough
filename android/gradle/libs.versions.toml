@@ -8,8 +8,8 @@ composeBom = "2025.12.00"
 navigationCompose = "2.9.6"
 room = "2.8.4"
 datastore = "1.2.0"
-supabase = "3.3.0"
-ktor = "3.3.2"
+supabase = "3.5.0"
+ktor = "3.4.3"
 coroutines = "1.10.2"
 
 [libraries]
