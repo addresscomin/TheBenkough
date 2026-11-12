@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -119,7 +120,7 @@ fun ScriptRoomScreen() {
             onValueChange = draftViewModel::updateBody,
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxSize(),
+                .heightIn(min = 300.dp),
             minLines = 12,
             shape = RoundedCornerShape(3.dp),
             placeholder = {
