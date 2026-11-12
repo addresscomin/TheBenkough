@@ -160,7 +160,11 @@ fun PhoneAuthScreen(onAuthenticated: () -> Unit) {
                                         phone = normalizedPhone
                                         password = newCode
                                     }
-                                    issuedCode = newCode
+                                    if (SupabaseProvider.client.auth.currentSessionOrNull() == null) {
+                                        message = "Account created, but Supabase has phone confirmation enabled. Turn off Confirm phone to use this no-SMS flow."
+                                    } else {
+                                        issuedCode = newCode
+                                    }
                                 } else {
                                     SupabaseProvider.client.auth.signInWith(Phone) {
                                         phone = normalizedPhone
