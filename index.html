@@ -221,6 +221,76 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--ink)}
 }
 @media(max-height:720px) and (min-width:701px){.auth-frame{min-height:570px}.auth-main{padding-top:28px;padding-bottom:28px}.auth-heading{margin-top:20px}.auth-stage{min-height:270px}}
 
+
+/* RADICAL ART-DIRECTION PASS — rebuild composition, not just styling */
+.intro{display:block;min-height:100svh;background:linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px) 7vw 0/23vw 100% no-repeat}
+.intro:before{content:"B.";position:absolute;right:5vw;top:50%;transform:translateY(-53%);font:italic 42vw/.72 'Playfair Display',serif;letter-spacing:-.12em;color:transparent;-webkit-text-stroke:1px rgba(218,165,174,.13);pointer-events:none}
+.intro:after{content:"PRIVATE ACCESS  /  MMXXVI";position:absolute;right:7vw;top:50%;writing-mode:vertical-rl;font:9px 'DM Mono',monospace;letter-spacing:.34em;color:rgba(228,195,200,.48)}
+.brand-stage{position:absolute;top:8.5vh;left:7vw;right:auto;width:min(29vw,310px);transform:none;opacity:1;animation:brand-arrive 1.3s cubic-bezier(.2,.8,.2,1) .15s both}
+.brand-glint{display:none}
+.start-area{left:7vw;right:auto;bottom:14vh;align-items:flex-start;gap:25px;opacity:1;transform:none;animation:copy-arrive 1s cubic-bezier(.2,.8,.2,1) .35s both}
+.eyebrow{font:10px 'DM Mono',monospace;letter-spacing:.35em;color:#c69da5}
+.start-area:before{content:"A DIFFERENT\A KIND OF\A PRESENCE.";white-space:pre;max-width:680px;color:#f2e7e6;font:500 clamp(58px,9.2vw,132px)/.83 'Playfair Display',serif;letter-spacing:-.075em}
+.start-button{margin-top:6px;min-width:230px;text-align:left;padding:20px 24px;border-radius:1px}
+.bottom-mark{left:7vw;right:auto;bottom:5vh;animation:fade-in .8s ease .8s forwards}
+@keyframes brand-arrive{from{opacity:0;transform:translateY(-14px);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
+@keyframes copy-arrive{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.auth-shell{padding:0;display:block;overflow-y:auto;background:rgba(5,4,6,.94);backdrop-filter:blur(28px)}
+.auth-frame{width:100%;height:100%;min-height:100svh;max-width:none;display:grid;grid-template-columns:1.05fr .95fr;border:0;border-radius:0;background:linear-gradient(110deg,#10090d 0%,#1b0b12 48%,#080709 48%,#080709 100%);box-shadow:none;overflow:hidden}
+.auth-aside{padding:8vh 7vw 7vh;border:0;border-right:1px solid rgba(231,192,198,.16);background:radial-gradient(ellipse at 0% 100%,rgba(130,36,57,.27),transparent 48%),linear-gradient(140deg,rgba(255,255,255,.025),transparent 52%)}
+.auth-aside:after{content:"01 — THE BENKOUGH";position:absolute;right:34px;top:50%;writing-mode:vertical-rl;font:9px 'DM Mono',monospace;letter-spacing:.3em;color:rgba(222,185,192,.38)}
+.auth-aside:before{width:40vw;height:40vw;left:-22vw;bottom:-18vw;border:1px solid rgba(220,163,174,.18);box-shadow:0 0 0 1px rgba(220,163,174,.04),0 0 0 55px rgba(220,163,174,.025),0 0 0 110px rgba(220,163,174,.018)}
+.auth-brand{font-size:11px;letter-spacing:.36em}
+.aside-copy{margin:auto 0;max-width:570px}
+.aside-kicker{display:flex;align-items:center;gap:14px}
+.aside-kicker:before{content:"";display:block;width:38px;height:1px;background:#b75c70}
+.aside-title{font-size:clamp(68px,8.2vw,122px);max-width:600px;line-height:.82;margin:30px 0 24px}
+.aside-note{max-width:320px;font-size:14px}
+.aside-foot{letter-spacing:.3em}
+.auth-main{min-height:100svh;padding:8vh clamp(28px,7vw,110px);justify-content:center}
+.auth-topline{margin-bottom:48px}
+.auth-switch{max-width:380px}
+.auth-heading{margin-top:40px;font-size:clamp(48px,5vw,68px)}
+.auth-sub{max-width:390px;margin-bottom:34px}
+.auth-stage{min-height:320px;max-width:440px}
+.auth-field input{height:58px}
+.auth-submit{height:60px}
+.auth-disclaimer{max-width:400px;text-align:left;margin-top:20px}
+.cross-mark{right:8%;top:14%;width:48px;height:48px;opacity:.48}
+.cross-mark:before,.cross-mark:after{height:48px}
+.portal{background:radial-gradient(ellipse at 75% 20%,rgba(122,28,50,.24),transparent 40%),#080709}
+@media(max-width:700px){
+ .intro:before{right:-7vw;top:44%;font-size:78vw;opacity:.8}
+ .intro:after{right:5vw;top:34%;font-size:7px}
+ .brand-stage{top:7vh;left:7vw;width:min(54vw,240px)}
+ .start-area{left:7vw;right:7vw;bottom:14vh;gap:22px}
+ .start-area:before{font-size:clamp(57px,15vw,88px);line-height:.86}
+ .eyebrow{font-size:8px;letter-spacing:.25em}
+ .start-button{min-width:210px;padding:18px 20px}
+ .bottom-mark{left:7vw;bottom:5vh}
+ .auth-shell{padding:0}
+ .auth-frame{display:flex;flex-direction:column;min-height:100svh;height:auto;background:linear-gradient(160deg,#1b0b12 0%,#0a080a 45%)}
+ .auth-aside{display:flex;min-height:190px;padding:28px 25px 22px;border-right:0;border-bottom:1px solid rgba(231,192,198,.14)}
+ .auth-aside:before{width:240px;height:240px;left:auto;right:-130px;bottom:-150px}
+ .auth-aside:after{right:20px;top:35px;font-size:7px}
+ .auth-brand{font-size:9px}
+ .aside-copy{margin:30px 0 0}
+ .aside-kicker{font-size:8px}
+ .aside-title{font-size:clamp(44px,12vw,62px);margin:12px 0 0;line-height:.88}
+ .aside-note,.aside-foot{display:none}
+ .auth-main{min-height:calc(100svh - 190px);padding:25px 25px 28px}
+ .auth-topline{margin-bottom:30px;font-size:8px}
+ .auth-heading{font-size:46px;margin-top:30px}
+ .auth-sub{font-size:11px;margin-bottom:25px}
+ .auth-stage{min-height:315px}
+ .auth-field input{height:54px}
+ .auth-disclaimer{text-align:center;font-size:7px}
+ .cross-mark{top:27px;right:26px;width:30px;height:30px}
+ .cross-mark:before,.cross-mark:after{height:30px}
+}
+@media(max-height:700px) and (min-width:701px){.auth-main{padding-top:5vh;padding-bottom:5vh}.auth-topline{margin-bottom:25px}.auth-heading{margin-top:24px}.auth-stage{min-height:265px}}
+@media(prefers-reduced-motion:reduce){.brand-stage,.start-area{animation:none}}
+
   </style>
 </head>
 <body>
