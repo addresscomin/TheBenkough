@@ -132,6 +132,21 @@ body.portal-open .portal{opacity:1;visibility:visible}.portal-inner{text-align:c
 @media(max-width:700px){.auth-shell{padding:14px;overflow-y:auto}.auth-frame{display:block;width:min(100%,470px);min-height:0;border-radius:20px}.auth-aside{display:none}.auth-main{min-height:min(690px,calc(100svh - 28px));padding:26px 21px}.auth-topline{margin-bottom:24px}.auth-heading{margin-top:24px}.auth-stage{min-height:310px}.cross-mark{top:91px;right:22px}}
 @media(max-height:700px) and (min-width:701px){.auth-frame{min-height:550px}.auth-main{padding-top:25px;padding-bottom:25px}.auth-topline{margin-bottom:16px}.auth-heading{margin-top:17px}.auth-stage{min-height:265px}}
 
+
+/* Login typography refinement */
+.auth-main,.auth-main button,.auth-main input{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+.auth-topline{font-size:10px;font-weight:900;letter-spacing:.22em;color:rgba(245,232,235,.66)}
+.auth-close{font-family:inherit;font-size:11px;font-weight:900;letter-spacing:.16em;color:#ead5da}
+.auth-switch button{font-family:inherit;font-size:11px;font-weight:950;letter-spacing:.19em}
+.auth-heading{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:clamp(32px,4vw,42px);font-weight:850;line-height:1.08;letter-spacing:-.045em;text-shadow:0 2px 18px rgba(0,0,0,.25)}
+.auth-sub{font-size:12px;font-weight:550;letter-spacing:.01em;color:rgba(245,232,235,.66)}
+.auth-field span{font-size:10px;font-weight:900;letter-spacing:.16em;color:#e5cbd0}
+.auth-field input{font-family:inherit;font-size:14px;font-weight:650;letter-spacing:.015em;color:#fff5f6;border-color:rgba(224,169,177,.25);background:rgba(0,0,0,.32)}
+.auth-field input::placeholder{font-size:12px;font-weight:550;color:rgba(235,220,223,.42)}
+.auth-submit{font-family:inherit;font-size:11px;font-weight:950;letter-spacing:.17em}
+.auth-disclaimer{font-size:9px;font-weight:850;letter-spacing:.075em;color:rgba(245,232,235,.48)}
+@media(max-width:700px){.auth-heading{font-size:34px}.auth-field input{height:50px;font-size:14px}.auth-field span{font-size:10px}}
+
   </style>
 </head>
 <body>
