@@ -89,7 +89,7 @@ private fun BenkoughApp() {
 
     LaunchedEffect(Unit) {
         authenticated = try {
-            SupabaseProvider.client.auth.currentSessionOrNull() != null
+            SupabaseProvider.client.gotrue.currentSessionOrNull() != null
         } catch (_: Exception) {
             false
         }
