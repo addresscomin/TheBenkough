@@ -3,127 +3,108 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#070910" />
+  <meta name="theme-color" content="#090607" />
   <title>THE BENKOUGH</title>
   <style>
-    :root { color-scheme: dark; background: #070910; }
+    :root { color-scheme: dark; --wine:#781f2d; --red:#a33342; --silver:#e7eaf0; }
     * { box-sizing: border-box; }
-    html, body {
-      width: 100%;
-      min-height: 100%;
-      margin: 0;
-      overflow: hidden;
-    }
+    html, body { width:100%; min-height:100%; margin:0; overflow:hidden; }
     body {
-      min-height: 100svh;
-      position: relative;
-      isolation: isolate;
+      min-height:100svh; position:relative; isolation:isolate; background:#090607;
+      color:var(--silver); font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    }
+    .ambient-layer { position:fixed; inset:0; z-index:-2; overflow:hidden; pointer-events:none;
       background:
-        linear-gradient(180deg, #080b14 0%, #090d18 48%, #070a12 100%);
+        radial-gradient(ellipse at 50% 112%, rgba(105,25,39,.34), transparent 54%),
+        radial-gradient(ellipse at 4% 16%, rgba(91,24,34,.22), transparent 42%),
+        linear-gradient(145deg,#0a0709 0%,#13090d 48%,#080607 100%);
     }
-
-    /* Layer 01: full-width animated atmospheric colour / smoke. */
-    .ambient-layer {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      overflow: hidden;
-      pointer-events: none;
-      background:
-        linear-gradient(180deg,
-          rgba(85, 77, 160, .035) 0%,
-          transparent 28%,
-          rgba(30, 125, 135, .035) 68%,
-          transparent 100%);
+    .smoke { position:absolute; width:150%; height:62vh; min-height:340px; left:-25%;
+      filter:blur(76px); opacity:.5; mix-blend-mode:screen; will-change:transform; }
+    .smoke-top { top:-30vh; background:
+      radial-gradient(ellipse 45% 28% at 18% 72%,rgba(117,30,48,.5),transparent 76%),
+      radial-gradient(ellipse 42% 26% at 78% 62%,rgba(80,28,39,.38),transparent 78%);
+      animation: drift-a 22s ease-in-out infinite alternate; }
+    .smoke-middle { top:20vh; opacity:.28; background:
+      radial-gradient(ellipse 48% 24% at 28% 48%,rgba(139,38,53,.32),transparent 78%),
+      radial-gradient(ellipse 44% 26% at 82% 60%,rgba(88,30,42,.28),transparent 80%);
+      animation: drift-b 26s ease-in-out infinite alternate; }
+    .smoke-bottom { bottom:-38vh; opacity:.55; background:
+      radial-gradient(ellipse 48% 28% at 18% 30%,rgba(104,27,43,.42),transparent 78%),
+      radial-gradient(ellipse 46% 30% at 82% 28%,rgba(75,24,35,.34),transparent 80%);
+      animation: drift-c 24s ease-in-out infinite alternate; }
+    .grain { position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.12;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E"); }
+    .vignette { position:fixed; inset:0; z-index:-1; pointer-events:none;
+      background:radial-gradient(ellipse at center,transparent 28%,rgba(0,0,0,.48) 100%); }
+    .intro { position:relative; width:100%; height:100svh; min-height:480px; display:grid; place-items:center; }
+    .brand-stage { position:absolute; top:50%; left:50%; width:min(84vw,820px);
+      transform:translate(-50%,-50%); opacity:0; animation:brand-intro 3.15s cubic-bezier(.2,.78,.2,1) .2s forwards; }
+    .brand-logo { display:block; width:100%; height:auto; filter:drop-shadow(0 12px 35px rgba(0,0,0,.55)); }
+    .brand-glint { position:absolute; top:50%; left:-12%; width:0; height:1px;
+      background:linear-gradient(90deg,transparent,rgba(245,220,224,.85),transparent);
+      box-shadow:0 0 22px 5px rgba(151,48,66,.28); animation:glint 1.15s ease-out .95s forwards; }
+    .start-area { position:absolute; left:0; right:0; bottom:clamp(64px,12vh,112px);
+      display:flex; flex-direction:column; align-items:center; gap:18px;
+      opacity:0; transform:translateY(18px); animation:show-start 1s cubic-bezier(.2,.8,.2,1) 2.85s forwards; }
+    .eyebrow { color:rgba(235,220,223,.52); font-size:10px; letter-spacing:.34em; text-transform:uppercase; }
+    .start-button { position:relative; min-width:208px; padding:17px 32px; border:1px solid rgba(224,169,177,.38);
+      border-radius:999px; color:#f7eef0; background:linear-gradient(135deg,rgba(122,34,50,.94),rgba(66,18,29,.96));
+      box-shadow:0 12px 38px rgba(83,19,34,.26),inset 0 1px 0 rgba(255,255,255,.14);
+      font:600 11px/1 inherit; letter-spacing:.25em; cursor:pointer; overflow:hidden;
+      transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease; }
+    .start-button::before { content:""; position:absolute; inset:0; transform:translateX(-120%);
+      background:linear-gradient(105deg,transparent 25%,rgba(255,255,255,.17) 50%,transparent 75%);
+      animation:button-sheen 4.8s ease-in-out 3.7s infinite; }
+    .start-button:hover { transform:translateY(-2px); border-color:rgba(240,198,204,.72);
+      box-shadow:0 16px 42px rgba(110,27,45,.38),inset 0 1px 0 rgba(255,255,255,.2); }
+    .start-button:active { transform:translateY(1px) scale(.985); }
+    .start-button span { position:relative; z-index:1; }
+    .bottom-mark { position:absolute; bottom:25px; color:rgba(235,220,223,.28);
+      font-size:9px; letter-spacing:.32em; text-transform:uppercase; opacity:0;
+      animation:fade-in .8s ease 3.3s forwards; }
+    @keyframes brand-intro {
+      0% { opacity:0; transform:translate(-50%,-50%) scale(1.14); filter:blur(12px); }
+      18% { opacity:1; filter:blur(0); }
+      55% { opacity:1; transform:translate(-50%,-50%) scale(1); }
+      100% { opacity:1; transform:translate(-50%,-105%) scale(.58); filter:blur(0); }
     }
-
-    .smoke {
-      position: absolute;
-      left: -30%;
-      width: 160%;
-      height: 62vh;
-      min-height: 340px;
-      opacity: .68;
-      filter: blur(58px);
-      will-change: transform, opacity;
-      transform: translate3d(0,0,0);
-      background-repeat: no-repeat;
-      mix-blend-mode: screen;
+    @keyframes glint { 0%{left:-12%;width:0;opacity:0} 20%{opacity:1} 100%{left:112%;width:24%;opacity:0} }
+    @keyframes show-start { to { opacity:1; transform:translateY(0); } }
+    @keyframes button-sheen { 0%,62%{transform:translateX(-120%)} 82%,100%{transform:translateX(120%)} }
+    @keyframes fade-in { to { opacity:1; } }
+    @keyframes drift-a { to { transform:translate3d(2%,-9vh,0) scale(1.08,1.1); } }
+    @keyframes drift-b { to { transform:translate3d(-3%,7vh,0) scale(1.12,.96); } }
+    @keyframes drift-c { to { transform:translate3d(2%,-6vh,0) scale(1.06,1.1); } }
+    @media(max-width:600px) {
+      .brand-stage { width:min(91vw,620px); }
+      .start-area { bottom:clamp(76px,14vh,118px); }
+      .start-button { min-width:194px; padding:16px 28px; }
+      .smoke { width:210%; left:-55%; filter:blur(58px); }
     }
-
-    /* Broad, irregular wisps stretch across the whole screen — no centre orb. */
-    .smoke-top {
-      top: -28vh;
-      background-image:
-        radial-gradient(ellipse 44% 28% at 18% 72%, rgba(93, 83, 220, .52) 0%, transparent 76%),
-        radial-gradient(ellipse 38% 24% at 52% 56%, rgba(44, 126, 190, .42) 0%, transparent 78%),
-        radial-gradient(ellipse 42% 30% at 84% 72%, rgba(31, 190, 170, .30) 0%, transparent 76%),
-        radial-gradient(ellipse 65% 22% at 48% 88%, rgba(102, 83, 190, .22) 0%, transparent 80%);
-      animation: smoke-rise 19s ease-in-out infinite alternate;
-    }
-
-    .smoke-middle {
-      top: 18vh;
-      height: 68vh;
-      opacity: .40;
-      filter: blur(72px);
-      background-image:
-        radial-gradient(ellipse 48% 22% at 12% 42%, rgba(43, 151, 181, .34) 0%, transparent 78%),
-        radial-gradient(ellipse 52% 24% at 48% 62%, rgba(105, 79, 205, .34) 0%, transparent 80%),
-        radial-gradient(ellipse 44% 26% at 88% 40%, rgba(38, 177, 158, .28) 0%, transparent 78%);
-      animation: smoke-flow 23s ease-in-out infinite alternate;
-    }
-
-    .smoke-bottom {
-      bottom: -34vh;
-      height: 66vh;
-      opacity: .58;
-      background-image:
-        radial-gradient(ellipse 48% 28% at 14% 28%, rgba(32, 159, 158, .36) 0%, transparent 78%),
-        radial-gradient(ellipse 42% 24% at 54% 18%, rgba(82, 86, 211, .42) 0%, transparent 80%),
-        radial-gradient(ellipse 46% 30% at 88% 34%, rgba(38, 127, 183, .32) 0%, transparent 78%),
-        radial-gradient(ellipse 70% 20% at 50% 8%, rgba(93, 76, 175, .20) 0%, transparent 82%);
-      animation: smoke-fall 21s ease-in-out infinite alternate;
-    }
-
-    .atmosphere {
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.018), transparent 24%, transparent 76%, rgba(255,255,255,.012));
-    }
-
-    @keyframes smoke-rise {
-      0%   { transform: translate3d(-2%, 5vh, 0) scale(1.02, 1); }
-      50%  { transform: translate3d(2%, -5vh, 0) scale(1.08, 1.12); }
-      100% { transform: translate3d(-1%, -12vh, 0) scale(1.04, 1.06); }
-    }
-    @keyframes smoke-flow {
-      0%   { transform: translate3d(3%, 7vh, 0) scale(1.04, .96); }
-      50%  { transform: translate3d(-3%, -4vh, 0) scale(1.1, 1.08); }
-      100% { transform: translate3d(2%, 5vh, 0) scale(1.02, 1); }
-    }
-    @keyframes smoke-fall {
-      0%   { transform: translate3d(2%, -8vh, 0) scale(1.02, 1.04); }
-      50%  { transform: translate3d(-2%, 2vh, 0) scale(1.1, .96); }
-      100% { transform: translate3d(1%, -3vh, 0) scale(1.04, 1.08); }
-    }
-
-    @media (max-width: 640px) {
-      .smoke { left: -55%; width: 210%; filter: blur(48px); }
-      .smoke-middle { filter: blur(58px); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .smoke { animation: none; }
+    @media(prefers-reduced-motion:reduce) {
+      *,*::before,*::after { animation-duration:.01ms!important; animation-delay:0ms!important; animation-iteration-count:1!important; transition:none!important; }
+      .brand-stage { opacity:1; top:19%; transform:translate(-50%,-50%) scale(.58); }
+      .start-area { opacity:1; transform:none; }
+      .bottom-mark { opacity:1; }
     }
   </style>
 </head>
 <body>
   <div class="ambient-layer" aria-hidden="true">
-    <div class="smoke smoke-top"></div>
-    <div class="smoke smoke-middle"></div>
-    <div class="smoke smoke-bottom"></div>
-    <div class="atmosphere"></div>
+    <div class="smoke smoke-top"></div><div class="smoke smoke-middle"></div><div class="smoke smoke-bottom"></div>
   </div>
+  <div class="grain" aria-hidden="true"></div><div class="vignette" aria-hidden="true"></div>
+  <main class="intro" aria-label="THE BENKOUGH welcome">
+    <div class="brand-stage">
+      <img class="brand-logo" src="./logo.svg" alt="THE BENKOUGH" />
+      <span class="brand-glint" aria-hidden="true"></span>
+    </div>
+    <div class="start-area">
+      <span class="eyebrow">A new experience begins</span>
+      <button class="start-button" type="button"><span>GET STARTED&nbsp; ↗</span></button>
+    </div>
+    <div class="bottom-mark">THE BENKOUGH</div>
+  </main>
 </body>
 </html>
