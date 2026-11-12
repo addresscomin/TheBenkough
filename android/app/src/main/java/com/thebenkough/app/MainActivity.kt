@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.thebenkough.app.feature.auth.PhoneAuthScreen
 import com.thebenkough.app.data.remote.SupabaseProvider
+import io.github.jan.supabase.auth.auth
 import com.thebenkough.app.feature.script.ScriptRoomScreen
 import com.thebenkough.app.feature.workspace.WorkspaceRecordsScreen
 
@@ -89,7 +90,7 @@ private fun BenkoughApp() {
 
     LaunchedEffect(Unit) {
         authenticated = try {
-            SupabaseProvider.client.gotrue.currentSessionOrNull() != null
+            SupabaseProvider.client.auth.currentSessionOrNull() != null
         } catch (_: Exception) {
             false
         }
