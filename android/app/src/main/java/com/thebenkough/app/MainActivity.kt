@@ -133,6 +133,12 @@ private fun BenkoughApp() {
                         title = "KEEP THE IMPORTANT THINGS.",
                         description = "Create searchable records for assets, references and project files. File upload and cloud storage are separate integration work."
                     )
+                    Destination.ASSETS -> WorkspaceRecordsScreen(
+                        module = "ASSETS",
+                        eyebrow = "03 / PROJECT VAULT",
+                        title = "KEEP THE IMPORTANT THINGS.",
+                        description = "Create searchable records for assets, references and project files. File upload and cloud storage are separate integration work."
+                    )
                     Destination.SCRIPT -> ScriptRoomScreen()
                     Destination.STORYBOARD -> RecordsPage("STORYBOARD", "SCENES & SEQUENCES", "Build a scene list with shot ideas, order and production notes.", "Scene name", "Visual, dialogue, shot and sequence notes…")
                     Destination.CAPTIONS -> RecordsPage("CAPTIONS", "CAPTION WORKSHOP", "Draft and store captions, descriptions and calls to action.", "Caption title", "Caption text, CTA and platform notes…")
