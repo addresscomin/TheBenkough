@@ -153,12 +153,12 @@ private fun BenkoughApp() {
 }
 
 @Composable
-private fun RecordsPage(module: String, eyebrow: String, descriptionTitle: String, detailsHint: String) {
+private fun RecordsPage(module: String, eyebrow: String, title: String, description: String, detailsHint: String) {
     WorkspaceRecordsScreen(
         module = module,
         eyebrow = eyebrow,
-        title = descriptionTitle,
-        description = "Create, save and delete your $module records on this device.",
+        title = title,
+        description = description,
         titleHint = "Name or title",
         detailsHint = detailsHint
     )
