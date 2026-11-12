@@ -92,6 +92,7 @@ fun ScriptRoomScreen() {
         TextField(
             value = state.title,
             onValueChange = draftViewModel::updateTitle,
+            enabled = state.saveStatus != "LOADING DRAFT",
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             shape = RoundedCornerShape(3.dp),
@@ -118,6 +119,7 @@ fun ScriptRoomScreen() {
         TextField(
             value = state.body,
             onValueChange = draftViewModel::updateBody,
+            enabled = state.saveStatus != "LOADING DRAFT",
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = 300.dp),
