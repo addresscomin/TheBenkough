@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.weight
-import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -91,18 +89,14 @@ private fun BenkoughApp() {
                     Destination.CREATE -> ScriptRoomScreen()
                     Destination.BUSINESS -> ModuleScreen(
                         eyebrow = "02 / BUSINESS HUB",
-                        title = "BUILD
-WITH
-INTENTION.",
+                        title = "BUILD WITH INTENTION.",
                         description = "Keep clients, projects, tasks and business records connected.",
                         accent = Lime,
                         items = listOf("CLIENTS", "LEADS", "PROJECTS & TASKS", "INVOICE RECORDS")
                     )
                     Destination.VAULT -> ModuleScreen(
                         eyebrow = "03 / PROJECT VAULT",
-                        title = "KEEP THE
-IMPORTANT
-THINGS.",
+                        title = "KEEP THE IMPORTANT THINGS.",
                         description = "A home for project references, assets and working documents.",
                         accent = Rose,
                         items = listOf("PROJECT FILES", "REFERENCES", "RECENT ACTIVITY", "SYNC STATUS")
