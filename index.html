@@ -146,7 +146,7 @@ body.portal-open .portal{opacity:1;visibility:visible}.portal-inner{text-align:c
     </div>
     <div class="start-area">
       <span class="eyebrow">A new experience begins</span>
-      <button class="start-button" id="getStarted" type="button"><span>GET STARTED&nbsp; ↗</span></button>
+      <button class="start-button" id="getStarted" type="button" onclick="document.body.classList.add('auth-open')"><span>GET STARTED&nbsp; ↗</span></button>
     </div>
     <div class="bottom-mark">THE BENKOUGH</div>
   </main>
@@ -185,7 +185,7 @@ body.portal-open .portal{opacity:1;visibility:visible}.portal-inner{text-align:c
     const authShell=document.getElementById('authShell'), authHeading=document.getElementById('authHeading'), authSub=document.getElementById('authSub');
     const loginTab=document.getElementById('loginTab'), signupTab=document.getElementById('signupTab');
     function setMode(mode){const s=mode==='signup';authShell.classList.toggle('mode-signup',s);authShell.classList.toggle('mode-login',!s);loginTab.classList.toggle('active',!s);signupTab.classList.toggle('active',s);loginTab.setAttribute('aria-selected',String(!s));signupTab.setAttribute('aria-selected',String(s));authHeading.textContent=s?'Make it yours.':'Welcome back.';authSub.textContent=s?'Create your demo profile and step into the experience.':'Your next chapter is one step away. Sign in to continue.';}
-    document.getElementById('getStarted').addEventListener('click',()=>document.body.classList.add('auth-open'));
+    document.getElementById('getStarted').onclick=()=>document.body.classList.add('auth-open');
     loginTab.addEventListener('click',()=>setMode('login'));signupTab.addEventListener('click',()=>setMode('signup'));
     document.getElementById('authClose').addEventListener('click',()=>document.body.classList.remove('auth-open'));
     function enterDemo(e){e.preventDefault();document.body.classList.add('portal-open');}
