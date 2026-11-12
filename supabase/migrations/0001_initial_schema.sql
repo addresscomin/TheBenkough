@@ -293,7 +293,7 @@ create policy "projects_delete_admin" on public.projects for delete to authentic
 );
 
 -- Workspace-scoped operational tables. Viewers can read; editors and above can write.
-do $
+do $$
 declare t text;
 begin
   foreach t in array array['tasks','clients','leads','content_items','assets'] loop
@@ -302,7 +302,7 @@ begin
     execute format('create policy %I on public.%I for update to authenticated using (exists (select 1 from public.workspace_members wm where wm.workspace_id = workspace_id and wm.user_id = (select auth.uid()) and wm.role in (''owner'',''admin'',''editor''))) with check (exists (select 1 from public.workspace_members wm where wm.workspace_id = workspace_id and wm.user_id = (select auth.uid()) and wm.role in (''owner'',''admin'',''editor'')))', t || '_update_editor', t);
     execute format('create policy %I on public.%I for delete to authenticated using (exists (select 1 from public.workspace_members wm where wm.workspace_id = workspace_id and wm.user_id = (select auth.uid()) and wm.role in (''owner'',''admin'')))', t || '_delete_admin', t);
   end loop;
-end $;
+end $$;
 
 -- Activity events are append-only and written by trusted server functions.
 create policy "activity_events_select_member" on public.activity_events for select to authenticated using (
