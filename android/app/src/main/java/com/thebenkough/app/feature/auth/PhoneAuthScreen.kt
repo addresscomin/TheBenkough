@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.thebenkough.app.data.remote.SupabaseProvider
+import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.OTP
 import io.github.jan.supabase.auth.OtpType
 import kotlinx.coroutines.launch
@@ -92,7 +93,7 @@ fun PhoneAuthScreen(onAuthenticated: () -> Unit) {
                         try {
                             if (!otpSent) {
                                 val fullPhone = "+91$phone"
-                                SupabaseProvider.client.gotrue.signInWith(OTP) { this.phone = fullPhone }
+                                SupabaseProvider.client.auth.signInWith(OTP) { this.phone = fullPhone }
                                 otpSent = true
                                 message = "OTP request sent. Check your SMS."
                             } else {
