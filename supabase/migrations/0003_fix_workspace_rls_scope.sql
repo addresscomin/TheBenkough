@@ -13,6 +13,7 @@ BEGIN
     );
 
     EXECUTE format('DROP POLICY IF EXISTS %I ON public.%I', t || '_insert_editor', t);
+    EXECUTE format('DROP POLICY IF EXISTS %I ON public.%I', t || '_insert_member', t);
     IF t = 'projects' OR t = 'content_items' OR t = 'tasks' THEN
       EXECUTE format(
         'CREATE POLICY %I ON public.%I FOR INSERT TO authenticated WITH CHECK (created_by = (SELECT auth.uid()) AND EXISTS (SELECT 1 FROM public.workspace_members wm WHERE wm.workspace_id = %I.workspace_id AND wm.user_id = (SELECT auth.uid()) AND wm.role IN (''owner'',''admin'',''editor'')))',
