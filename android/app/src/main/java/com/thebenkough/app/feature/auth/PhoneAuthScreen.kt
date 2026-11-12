@@ -24,6 +24,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -34,11 +36,29 @@ import io.github.jan.supabase.auth.providers.builtin.OTP
 import io.github.jan.supabase.auth.OtpType
 import kotlinx.coroutines.launch
 
-private val AuthInk = Color(0xFF17101E)
-private val AuthPlum = Color(0xFF211329)
-private val AuthIvory = Color(0xFFF2E9DE)
-private val AuthLilac = Color(0xFFB7A7C9)
-private val AuthLime = Color(0xFFDDF27A)
+private val AuthInk = Color(0xFF050607)
+private val AuthPlum = Color(0xFF101318)
+private val AuthIvory = Color(0xFFFFFFFF)
+private val AuthLilac = Color(0xFFB9C2CC)
+private val AuthLime = Color(0xFFB7E36A)
+private val AuthFieldColors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
+    focusedTextColor = Color.White,
+    unfocusedTextColor = Color.White,
+    cursorColor = AuthLime,
+    focusedBorderColor = AuthLime,
+    unfocusedBorderColor = Color(0xFF65717D),
+    focusedLabelColor = AuthLime,
+    unfocusedLabelColor = Color(0xFFB9C2CC),
+    focusedContainerColor = AuthPlum,
+    unfocusedContainerColor = AuthPlum
+)
+private val AuthInputStyle = TextStyle(
+    color = Color.White,
+    fontFamily = FontFamily.SansSerif,
+    fontSize = 18.sp,
+    fontWeight = FontWeight.SemiBold,
+    letterSpacing = 1.sp
+)
 
 @Composable
 fun PhoneAuthScreen(onAuthenticated: () -> Unit) {
@@ -56,7 +76,7 @@ fun PhoneAuthScreen(onAuthenticated: () -> Unit) {
         ) {
             Text("THE BENKOUGH®", color = AuthIvory, fontSize = 14.sp, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
             Spacer(Modifier.height(18.dp))
-            Text(if (otpSent) "VERIFY YOUR\nNUMBER." else "YOUR WORKSPACE.\nYOUR NUMBER.", color = AuthIvory, fontSize = 34.sp, lineHeight = 38.sp, fontWeight = FontWeight.Black)
+            Text(if (otpSent) "VERIFY YOUR\nNUMBER." else "YOUR WORKSPACE.\nYOUR NUMBER.", color = AuthIvory, fontSize = 34.sp, lineHeight = 38.sp, fontWeight = FontWeight.Black, fontFamily = FontFamily.SansSerif)
             Spacer(Modifier.height(10.dp))
             Text(if (otpSent) "Enter the 6-digit code sent to +91 $phone." else "Sign in securely with a one-time SMS code. No password required.", color = AuthLilac, fontSize = 13.sp, lineHeight = 20.sp)
             Spacer(Modifier.height(26.dp))
@@ -67,8 +87,10 @@ fun PhoneAuthScreen(onAuthenticated: () -> Unit) {
                     onValueChange = { phone = it.filter(Char::isDigit).take(10); message = null },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    label = { Text("10-digit mobile number") },
-                    prefix = { Text("+91 ") },
+                    label = { Text("10-digit mobile number", fontFamily = FontFamily.SansSerif) },
+                    prefix = { Text("+91 ", color = Color.White, fontWeight = FontWeight.Bold) },
+                    textStyle = AuthInputStyle,
+                    colors = AuthFieldColors,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     shape = RoundedCornerShape(8.dp)
                 )
@@ -78,7 +100,9 @@ fun PhoneAuthScreen(onAuthenticated: () -> Unit) {
                     onValueChange = { otp = it.filter(Char::isDigit).take(6); message = null },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    label = { Text("6-digit OTP") },
+                    label = { Text("6-digit OTP", fontFamily = FontFamily.SansSerif) },
+                    textStyle = AuthInputStyle,
+                    colors = AuthFieldColors,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                     shape = RoundedCornerShape(8.dp)
                 )
