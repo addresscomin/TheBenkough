@@ -15,6 +15,8 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
+        buildConfigField("String", "SUPABASE_URL", "\"https://gqugbuvknmdbmnojpmbr.supabase.co\"")
+        buildConfigField("String", "SUPABASE_PUBLISHABLE_KEY", "\"sb_publishable_uhDy1U2vs9vpF2BuvTzbGQ_4U7-N3kx\"")
     }
 
     // Keep Java and Kotlin bytecode targets aligned for Room/KAPT and CI.
@@ -26,7 +28,10 @@ android {
         jvmTarget = "17"
     }
 
-    buildFeatures { compose = true }
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
 
     packaging {
         resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
