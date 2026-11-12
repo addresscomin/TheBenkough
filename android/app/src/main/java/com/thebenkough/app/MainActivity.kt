@@ -28,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -40,6 +41,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.thebenkough.app.feature.auth.PhoneAuthScreen
+import com.thebenkough.app.data.remote.SupabaseProvider
 import com.thebenkough.app.feature.script.ScriptRoomScreen
 import com.thebenkough.app.feature.workspace.WorkspaceRecordsScreen
 
@@ -81,6 +84,32 @@ private enum class Destination(val label: String) {
 @Composable
 private fun BenkoughApp() {
     var destination by rememberSaveable { mutableStateOf(Destination.HOME) }
+    var authChecked by rememberSaveable { mutableStateOf(false) }
+    var authenticated by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        authenticated = try {
+            SupabaseProvider.client.auth.currentSessionOrNull() != null
+        } catch (_: Exception) {
+            false
+        }
+        authChecked = true
+    }
+
+    if (!authChecked) {
+        Surface(modifier = Modifier.fillMaxSize(), color = Ink) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("THE BENKOUGH  /  SECURE START", color = Ivory, fontWeight = FontWeight.Bold)
+            }
+        }
+        return
+    }
+
+    if (!authenticated) {
+        PhoneAuthScreen(onAuthenticated = { authenticated = true })
+        return
+    }
+
     Surface(modifier = Modifier.fillMaxSize(), color = Ink) {
         Column(
             modifier = Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.navigationBars)
