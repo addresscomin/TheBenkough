@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.weight
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,6 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import com.thebenkough.app.feature.script.ScriptRoomScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -86,15 +88,7 @@ private fun BenkoughApp() {
                         onBusiness = { destination = Destination.BUSINESS },
                         onVault = { destination = Destination.VAULT }
                     )
-                    Destination.CREATE -> ModuleScreen(
-                        eyebrow = "01 / CREATOR STUDIO",
-                        title = "MAKE
-SOMETHING
-MATTER.",
-                        description = "A focused space for scripts, scenes, captions and content planning.",
-                        accent = Cobalt,
-                        items = listOf("SCRIPT ROOM", "STORYBOARD", "CAPTION ENGINE", "CONTENT PLANNER")
-                    )
+                    Destination.CREATE -> ScriptRoomScreen()
                     Destination.BUSINESS -> ModuleScreen(
                         eyebrow = "02 / BUSINESS HUB",
                         title = "BUILD
