@@ -194,24 +194,28 @@ create index if not exists idx_activity_workspace on public.activity_events(work
 create index if not exists idx_notifications_user on public.notifications(user_id, created_at desc);
 
 -- Profile rows are created automatically after Supabase Auth signup.
-create or replace function public.handle_new_user()
+create schema if not exists private;
+revoke all on schema private from public, anon, authenticated;
+
+create or replace function private.handle_new_user()
 returns trigger
 language plpgsql
 security definer
 set search_path = ''
-as $$
+as $
 begin
   insert into public.profiles (id, display_name)
   values (new.id, coalesce(new.raw_user_meta_data ->> 'display_name', ''));
   insert into public.user_preferences (user_id) values (new.id);
   return new;
 end;
-$$;
+$;
+revoke all on function private.handle_new_user() from public, anon, authenticated;
 
 drop trigger if exists on_auth_user_created_benkough on auth.users;
 create trigger on_auth_user_created_benkough
 after insert on auth.users
-for each row execute function public.handle_new_user();
+for each row execute function private.handle_new_user();
 
 -- RLS is enabled on every exposed application table.
 alter table public.profiles enable row level security;
@@ -274,32 +278,34 @@ create policy "projects_delete_admin" on public.projects for delete to authentic
   exists (select 1 from public.workspace_members wm where wm.workspace_id = workspace_id and wm.user_id = (select auth.uid()) and wm.role in ('owner','admin'))
 );
 
--- Shared workspace policies for standard tables.
-do $$
+-- Workspace-scoped operational tables. Viewers can read; editors and above can write.
+do $
 declare t text;
 begin
-  foreach t in array array['tasks','clients','leads','content_items','assets','invoices','activity_events'] loop
+  foreach t in array array['tasks','clients','leads','content_items','assets'] loop
     execute format('create policy %I on public.%I for select to authenticated using (exists (select 1 from public.workspace_members wm where wm.workspace_id = workspace_id and wm.user_id = (select auth.uid())))', t || '_select_member', t);
-    execute format('create policy %I on public.%I for insert to authenticated with check (exists (select 1 from public.workspace_members wm where wm.workspace_id = workspace_id and wm.user_id = (select auth.uid())))', t || '_insert_member', t);
-    execute format('create policy %I on public.%I for update to authenticated using (exists (select 1 from public.workspace_members wm where wm.workspace_id = workspace_id and wm.user_id = (select auth.uid()))) with check (exists (select 1 from public.workspace_members wm where wm.workspace_id = workspace_id and wm.user_id = (select auth.uid())))', t || '_update_member', t);
-    execute format('create policy %I on public.%I for delete to authenticated using (exists (select 1 from public.workspace_members wm where wm.workspace_id = workspace_id and wm.user_id = (select auth.uid())))', t || '_delete_member', t);
+    execute format('create policy %I on public.%I for insert to authenticated with check (exists (select 1 from public.workspace_members wm where wm.workspace_id = workspace_id and wm.user_id = (select auth.uid()) and wm.role in (''owner'',''admin'',''editor'')))', t || '_insert_editor', t);
+    execute format('create policy %I on public.%I for update to authenticated using (exists (select 1 from public.workspace_members wm where wm.workspace_id = workspace_id and wm.user_id = (select auth.uid()) and wm.role in (''owner'',''admin'',''editor''))) with check (exists (select 1 from public.workspace_members wm where wm.workspace_id = workspace_id and wm.user_id = (select auth.uid()) and wm.role in (''owner'',''admin'',''editor'')))', t || '_update_editor', t);
+    execute format('create policy %I on public.%I for delete to authenticated using (exists (select 1 from public.workspace_members wm where wm.workspace_id = workspace_id and wm.user_id = (select auth.uid()) and wm.role in (''owner'',''admin'')))', t || '_delete_admin', t);
   end loop;
-end $$;
+end $;
+
+-- Activity events are append-only and written by trusted server functions.
+create policy "activity_events_select_member" on public.activity_events for select to authenticated using (
+  exists (select 1 from public.workspace_members wm where wm.workspace_id = workspace_id and wm.user_id = (select auth.uid()))
+);
+
+-- Invoices are read from the client. Creation, numbering and total calculations
+-- must be performed by a trusted Edge Function; no direct client write policies.
+create policy "invoices_select_member" on public.invoices for select to authenticated using (
+  exists (select 1 from public.workspace_members wm where wm.workspace_id = workspace_id and wm.user_id = (select auth.uid()))
+);
 
 create policy "invoice_items_select_workspace" on public.invoice_items for select to authenticated using (
   exists (select 1 from public.invoices i join public.workspace_members wm on wm.workspace_id = i.workspace_id where i.id = invoice_id and wm.user_id = (select auth.uid()))
 );
-create policy "invoice_items_insert_workspace" on public.invoice_items for insert to authenticated with check (
-  exists (select 1 from public.invoices i join public.workspace_members wm on wm.workspace_id = i.workspace_id where i.id = invoice_id and wm.user_id = (select auth.uid()) and i.status = 'draft')
-);
-create policy "invoice_items_update_workspace" on public.invoice_items for update to authenticated using (
-  exists (select 1 from public.invoices i join public.workspace_members wm on wm.workspace_id = i.workspace_id where i.id = invoice_id and wm.user_id = (select auth.uid()) and i.status = 'draft')
-) with check (
-  exists (select 1 from public.invoices i join public.workspace_members wm on wm.workspace_id = i.workspace_id where i.id = invoice_id and wm.user_id = (select auth.uid()) and i.status = 'draft')
-);
-create policy "invoice_items_delete_workspace" on public.invoice_items for delete to authenticated using (
-  exists (select 1 from public.invoices i join public.workspace_members wm on wm.workspace_id = i.workspace_id where i.id = invoice_id and wm.user_id = (select auth.uid()) and i.status = 'draft')
-);
+-- Invoice line-item writes are intentionally server-only until the trusted
+-- invoice Edge Function validates and calculates all monetary values.
 
 create policy "notifications_select_own" on public.notifications for select to authenticated using (user_id = (select auth.uid()));
 create policy "notifications_update_own" on public.notifications for update to authenticated using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
