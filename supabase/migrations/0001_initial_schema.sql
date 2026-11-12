@@ -202,33 +202,30 @@ returns trigger
 language plpgsql
 security definer
 set search_path = ''
-as $
+as $$
+declare
+  personal_workspace_id uuid;
 begin
   insert into public.profiles (id, display_name)
   values (new.id, coalesce(new.raw_user_meta_data ->> 'display_name', ''));
   insert into public.user_preferences (user_id) values (new.id);
 
   -- Every new account starts with a private personal workspace.
-  declare
-    personal_workspace_id uuid;
-  begin
-    insert into public.workspaces (name, workspace_type, owner_id)
-    values (
-      coalesce(nullif(new.raw_user_meta_data ->> 'display_name', ''), 'My') || '''s Workspace',
-      'personal',
-      new.id
-    )
-    returning id into personal_workspace_id;
+  insert into public.workspaces (name, workspace_type, owner_id)
+  values (
+    coalesce(nullif(new.raw_user_meta_data ->> 'display_name', ''), 'My') || '''s Workspace',
+    'personal',
+    new.id
+  )
+  returning id into personal_workspace_id;
 
-    insert into public.workspace_members (workspace_id, user_id, role)
-    values (personal_workspace_id, new.id, 'owner');
-  end;
+  insert into public.workspace_members (workspace_id, user_id, role)
+  values (personal_workspace_id, new.id, 'owner');
 
   return new;
 end;
-$;
+$$;
 revoke all on function private.handle_new_user() from public, anon, authenticated;
-
 drop trigger if exists on_auth_user_created_benkough on auth.users;
 create trigger on_auth_user_created_benkough
 after insert on auth.users
