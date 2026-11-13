@@ -27,11 +27,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.thebenkough.app.data.local.BenkoughDatabase
 
-private val EditorInk = Color(0xFF17101E)
-private val EditorPlum = Color(0xFF211329)
-private val EditorIvory = Color(0xFFF2E9DE)
-private val EditorLilac = Color(0xFFB7A7C9)
-private val EditorLime = Color(0xFFDDF27A)
+private val EditorInk = Color(0xFF050608)
+private val EditorPlum = Color(0xCC111922)
+private val EditorIvory = Color(0xFFF4F7FB)
+private val EditorLilac = Color(0xFF929EAD)
+private val EditorLime = Color(0xFF77E6D2)
 
 @Composable
 fun ScriptRoomScreen() {
@@ -58,7 +58,7 @@ fun ScriptRoomScreen() {
         TextField(
             value = state.title, onValueChange = draftViewModel::updateTitle,
             enabled = state.saveStatus != "LOADING DRAFT", modifier = Modifier.fillMaxWidth(),
-            singleLine = true, shape = RoundedCornerShape(3.dp),
+            singleLine = true, shape = RoundedCornerShape(18.dp),
             textStyle = androidx.compose.ui.text.TextStyle(color = EditorIvory, fontSize = 17.sp, fontWeight = FontWeight.Bold),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = EditorPlum, unfocusedContainerColor = EditorPlum,
@@ -74,7 +74,7 @@ fun ScriptRoomScreen() {
             value = state.body, onValueChange = draftViewModel::updateBody,
             enabled = state.saveStatus != "LOADING DRAFT",
             modifier = Modifier.fillMaxWidth().heightIn(min = 300.dp),
-            minLines = 12, shape = RoundedCornerShape(3.dp),
+            minLines = 12, shape = RoundedCornerShape(18.dp),
             placeholder = { Text("Start with the opening line…", color = EditorLilac.copy(alpha = .65f)) },
             textStyle = androidx.compose.ui.text.TextStyle(color = EditorIvory, fontSize = 15.sp, lineHeight = 25.sp),
             colors = TextFieldDefaults.colors(
