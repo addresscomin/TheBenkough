@@ -105,7 +105,8 @@ private fun BenkoughApp() {
     LaunchedEffect(Unit) {
         authenticated = try {
             SupabaseProvider.client.auth.currentSessionOrNull() != null
-        } catch (_: Exception) {
+        } catch (_: Throwable) {
+            // Keep the app shell alive even if a native SDK fails during startup.
             false
         }
         authChecked = true
