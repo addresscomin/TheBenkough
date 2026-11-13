@@ -57,3 +57,12 @@ For a local build, put the values in your user-level Gradle properties file rath
 `~/.gradle/gradle.properties`
 
 Use the same property names listed above. GitHub Actions reads the matching repository secrets automatically. Missing Firebase values leave remote push disabled but do not prevent a debug APK from building with test ads.
+
+
+## 6. Legacy custom access-code endpoint (retired)
+
+The old `register-phone-access` endpoint has been replaced with a 410-disabled response. It previously created accounts with `phone_confirm: true` before proving phone ownership and must not be used.
+
+The Android app currently uses Supabase Auth's native six-digit numeric SMS OTP flow. Supabase Auth owns the challenge, expiry, attempt checks, phone confirmation, and authenticated session. A six-character mixed alphanumeric custom code is not interchangeable with Supabase's native SMS OTP token and must not be displayed as a phone-verification code. Do not re-enable the legacy endpoint.
+
+To enable real SMS delivery, the project owner must configure an approved SMS provider in Supabase Auth. In India, sender identity and message templates may require the business's applicable DLT registration and provider approval. No SMS delivery is claimed until a real phone test succeeds.
