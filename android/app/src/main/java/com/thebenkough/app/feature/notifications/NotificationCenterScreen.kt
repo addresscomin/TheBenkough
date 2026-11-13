@@ -39,6 +39,10 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.thebenkough.app.data.remote.SupabaseProvider
+import com.thebenkough.app.data.remote.PushRegistration
+import io.github.jan.supabase.functions.functions
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
@@ -124,6 +128,36 @@ fun NotificationCenterScreen() {
                 }
             }
         }
+
+            Button(
+                onClick = {
+                    scope.launch {
+                        loading = true
+                        try {
+                            SupabaseProvider.client.functions.invoke(
+                                function = "send-user-notification",
+                                body = JsonObject(mapOf(
+                                    "title" to JsonPrimitive("THE BENKOUGH"),
+                                    "body" to JsonPrimitive("Your test push notification is connected.")
+                                ))
+                            )
+                            message = "PUSH REQUEST SENT · CHECK YOUR DEVICE"
+                            refresh()
+                        } catch (error: Exception) {
+                            message = "PUSH REQUEST FAILED · ${error.message?.take(65) ?: "CHECK SERVER CONFIG"}"
+                        } finally {
+                            loading = false
+                        }
+                    }
+                },
+                enabled = !loading && PushRegistration.isConfigured(),
+                colors = ButtonDefaults.buttonColors(containerColor = NPanel, contentColor = NAccent)
+            ) {
+                Text("SEND TEST PUSH", fontWeight = FontWeight.Bold)
+            }
+            if (!PushRegistration.isConfigured()) {
+                Text("REMOTE PUSH NEEDS FIREBASE APP CONFIG. SERVER-SIDE DELIVERY ALSO NEEDS THE FCM SERVICE ACCOUNT SECRET IN SUPABASE.", color = NMuted, fontSize = 8.sp, lineHeight = 13.sp)
+            }
         if (items.isEmpty()) {
             Text("No notifications yet.", color = NMuted, modifier = Modifier.padding(top = 18.dp))
         } else {
@@ -158,7 +192,7 @@ fun NotificationCenterScreen() {
             }
         }
         Text(
-            "IN-APP INBOX + DEVICE LOCAL ALERTS ARE ENABLED. REMOTE PUSH DELIVERY NEEDS THE APP'S FIREBASE SENDER CONFIGURATION AND DEVICE TOKEN REGISTRATION.",
+            "IN-APP INBOX + LOCAL ALERTS ARE ENABLED. REMOTE PUSH USES FIREBASE CLOUD MESSAGING AND THE SECURE SUPABASE EDGE FUNCTION.",
             color = NMuted.copy(alpha = .7f), fontSize = 8.sp, lineHeight = 13.sp
         )
     }
