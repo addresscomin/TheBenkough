@@ -6,6 +6,11 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
 }
 
+val benkoughFirebaseAppId = providers.gradleProperty("BENKOUGH_FIREBASE_APP_ID").orElse("").get()
+val benkoughFirebaseApiKey = providers.gradleProperty("BENKOUGH_FIREBASE_API_KEY").orElse("").get()
+val benkoughFirebaseProjectId = providers.gradleProperty("BENKOUGH_FIREBASE_PROJECT_ID").orElse("").get()
+val benkoughFirebaseSenderId = providers.gradleProperty("BENKOUGH_FIREBASE_SENDER_ID").orElse("").get()
+
 android {
     namespace = "com.thebenkough.app"
     compileSdk = 36
@@ -63,6 +68,9 @@ dependencies {
     implementation(libs.supabase.auth)
     implementation(libs.supabase.postgrest)
     implementation(libs.supabase.storage)
+    implementation(libs.supabase.functions)
+    implementation(platform("com.google.firebase:firebase-bom:35.1.0"))
+    implementation("com.google.firebase:firebase-messaging")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     implementation(libs.ktor.client.android)
     implementation(libs.kotlinx.coroutines.android)
