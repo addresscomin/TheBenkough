@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.thebenkough.app.data.remote.SupabaseProvider
 import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.functions.functions
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerialName
@@ -48,7 +49,6 @@ import kotlinx.serialization.json.JsonPrimitive
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.UUID
 import kotlin.math.roundToLong
 
 private val IInk = Color(0xFF17101E)
@@ -166,39 +166,16 @@ fun InvoiceManagerScreen() {
                     scope.launch {
                         busy = true
                         try {
-                            val userId = SupabaseProvider.client.auth.currentUserOrNull()?.id ?: error("Sign in first.")
-                            val workspace = SupabaseProvider.client.postgrest["workspaces"]
-                                .select { filter { eq("owner_id", userId) } }
-                                .decodeList<InvoiceWorkspace>()
-                                .firstOrNull() ?: error("Personal workspace not found.")
-                            val subtotal = (qty * price * 100.0).roundToLong()
-                            val taxMinor = (subtotal * tax / 100.0).roundToLong()
-                            val total = subtotal + taxMinor
-                            val today = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
-                            val number = "BK-${SimpleDateFormat("yyMMdd", Locale.US).format(Date())}-${UUID.randomUUID().toString().take(4).uppercase()}"
-                            val invoiceId = UUID.randomUUID().toString()
-                            val invoice = JsonObject(mapOf(
-                                "id" to JsonPrimitive(invoiceId),
-                                "workspace_id" to JsonPrimitive(workspace.id),
-                                "invoice_number" to JsonPrimitive(number),
-                                "client_name" to JsonPrimitive(client.trim()),
-                                "currency" to JsonPrimitive("INR"),
-                                "subtotal_minor" to JsonPrimitive(subtotal),
-                                "tax_minor" to JsonPrimitive(taxMinor),
-                                "total_minor" to JsonPrimitive(total),
-                                "status" to JsonPrimitive("issued"),
-                                "issue_date" to JsonPrimitive(today),
-                                "created_by" to JsonPrimitive(userId)
-                            ))
-                            SupabaseProvider.client.postgrest["invoices"].insert(invoice)
-                            val line = JsonObject(mapOf(
-                                "invoice_id" to JsonPrimitive(invoiceId),
-                                "description" to JsonPrimitive(itemDescription.trim()),
-                                "quantity" to JsonPrimitive(qty),
-                                "unit_price_minor" to JsonPrimitive((price * 100.0).roundToLong()),
-                                "line_total_minor" to JsonPrimitive(subtotal)
-                            ))
-                            SupabaseProvider.client.postgrest["invoice_items"].insert(line)
+                            SupabaseProvider.client.functions.invoke(
+                                function = "create-invoice",
+                                body = JsonObject(mapOf(
+                                    "client_name" to JsonPrimitive(client.trim()),
+                                    "description" to JsonPrimitive(itemDescription.trim()),
+                                    "quantity" to JsonPrimitive(qty),
+                                    "unit_price_rupees" to JsonPrimitive(price),
+                                    "tax_percent" to JsonPrimitive(tax)
+                                ))
+                            )
                             itemDescription = ""
                             unitPrice = ""
                             quantity = "1"
