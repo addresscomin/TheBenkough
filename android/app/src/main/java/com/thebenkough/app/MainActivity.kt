@@ -324,7 +324,7 @@ private fun ActionTile(title: String, subtitle: String, background: Color, foreg
 private fun BottomRail(selected: Destination, onSelect: (Destination) -> Unit) {
     val roots = listOf(Destination.HOME, Destination.CREATOR_HUB, Destination.BUSINESS_HUB, Destination.VAULT_HUB)
     val selectedRoot = when (selected) {
-        Destination.HOME -> Destination.HOME
+        Destination.HOME, Destination.NOTIFICATIONS -> Destination.HOME
         Destination.CREATOR_HUB, Destination.SCRIPT, Destination.STORYBOARD, Destination.CAPTIONS,
         Destination.HASHTAGS, Destination.CALENDAR, Destination.CONTENT_LIBRARY, Destination.TELEPROMPTER -> Destination.CREATOR_HUB
         Destination.BUSINESS_HUB, Destination.CLIENTS, Destination.LEADS, Destination.PROJECTS,
