@@ -6,10 +6,12 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
 }
 
-val benkoughFirebaseAppId = providers.gradleProperty("BENKOUGH_FIREBASE_APP_ID").orElse("").get()
-val benkoughFirebaseApiKey = providers.gradleProperty("BENKOUGH_FIREBASE_API_KEY").orElse("").get()
-val benkoughFirebaseProjectId = providers.gradleProperty("BENKOUGH_FIREBASE_PROJECT_ID").orElse("").get()
-val benkoughFirebaseSenderId = providers.gradleProperty("BENKOUGH_FIREBASE_SENDER_ID").orElse("").get()
+val benkoughFirebaseAppId = providers.gradleProperty("BENKOUGH_FIREBASE_APP_ID").orElse(providers.environmentVariable("BENKOUGH_FIREBASE_APP_ID")).orElse("").get()
+val benkoughFirebaseApiKey = providers.gradleProperty("BENKOUGH_FIREBASE_API_KEY").orElse(providers.environmentVariable("BENKOUGH_FIREBASE_API_KEY")).orElse("").get()
+val benkoughFirebaseProjectId = providers.gradleProperty("BENKOUGH_FIREBASE_PROJECT_ID").orElse(providers.environmentVariable("BENKOUGH_FIREBASE_PROJECT_ID")).orElse("").get()
+val benkoughFirebaseSenderId = providers.gradleProperty("BENKOUGH_FIREBASE_SENDER_ID").orElse(providers.environmentVariable("BENKOUGH_FIREBASE_SENDER_ID")).orElse("").get()
+val benkoughAdMobAppId = providers.gradleProperty("BENKOUGH_ADMOB_APP_ID").orElse(providers.environmentVariable("BENKOUGH_ADMOB_APP_ID")).orElse("ca-app-pub-3940256099942544~3347511713").get()
+val benkoughAdMobBannerId = providers.gradleProperty("BENKOUGH_ADMOB_BANNER_ID").orElse(providers.environmentVariable("BENKOUGH_ADMOB_BANNER_ID")).orElse("ca-app-pub-3940256099942544/9214589741").get()
 
 android {
     namespace = "com.thebenkough.app"
