@@ -47,11 +47,11 @@ import java.util.Date
 import java.util.Locale
 import java.util.UUID
 
-private val PageInk = Color(0xFF17101E)
-private val PagePlum = Color(0xFF211329)
-private val PageIvory = Color(0xFFF2E9DE)
-private val PageLilac = Color(0xFFB7A7C9)
-private val PageLime = Color(0xFFDDF27A)
+private val PageInk = Color(0xFF050608)
+private val PagePlum = Color(0xCC111922)
+private val PageIvory = Color(0xFFF4F7FB)
+private val PageLilac = Color(0xFF929EAD)
+private val PageLime = Color(0xFF77E6D2)
 
 @Composable
 fun WorkspaceRecordsScreen(
@@ -125,7 +125,7 @@ fun WorkspaceRecordsScreen(
                     }
                 } else message = "ADD A TITLE FIRST"
             },
-            modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(3.dp),
+            modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(18.dp),
             colors = ButtonDefaults.buttonColors(containerColor = PageLime, contentColor = PageInk)
         ) { Text("SAVE ENTRY  ↗", fontWeight = FontWeight.Black, letterSpacing = 1.sp) }
 
@@ -145,7 +145,7 @@ fun WorkspaceRecordsScreen(
                 }
             },
             enabled = !syncBusy,
-            modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(3.dp),
+            modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(18.dp),
             colors = ButtonDefaults.buttonColors(containerColor = PagePlum, contentColor = PageLime)
         ) { Text(if (syncBusy) "SYNCING…" else "SYNC NOW · UPLOAD + RESTORE  ↗", fontWeight = FontWeight.Bold, letterSpacing = .7.sp) }
         Text(message, color = PageLilac, fontSize = 9.sp, letterSpacing = 1.2.sp)
@@ -156,14 +156,14 @@ fun WorkspaceRecordsScreen(
         }
 
         if (records.isEmpty()) {
-            Column(modifier = Modifier.fillMaxWidth().background(PagePlum, RoundedCornerShape(3.dp)).padding(18.dp),
+            Column(modifier = Modifier.fillMaxWidth().background(PagePlum, RoundedCornerShape(18.dp)).padding(18.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text("NOTHING HERE YET.", color = PageIvory, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text("Create your first entry above. It will be stored locally on this device.", color = PageLilac, fontSize = 12.sp, lineHeight = 18.sp)
             }
         } else {
             records.forEach { record ->
-                Column(modifier = Modifier.fillMaxWidth().background(PagePlum, RoundedCornerShape(3.dp)).padding(15.dp),
+                Column(modifier = Modifier.fillMaxWidth().background(PagePlum, RoundedCornerShape(18.dp)).padding(15.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (editingId == record.id) {
                         OutlinedTextField(value = editTitle, onValueChange = { editTitle = it }, modifier = Modifier.fillMaxWidth(),
