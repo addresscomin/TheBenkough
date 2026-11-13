@@ -10,8 +10,14 @@ val benkoughFirebaseAppId = providers.gradleProperty("BENKOUGH_FIREBASE_APP_ID")
 val benkoughFirebaseApiKey = providers.gradleProperty("BENKOUGH_FIREBASE_API_KEY").orElse(providers.environmentVariable("BENKOUGH_FIREBASE_API_KEY")).orElse("").get()
 val benkoughFirebaseProjectId = providers.gradleProperty("BENKOUGH_FIREBASE_PROJECT_ID").orElse(providers.environmentVariable("BENKOUGH_FIREBASE_PROJECT_ID")).orElse("").get()
 val benkoughFirebaseSenderId = providers.gradleProperty("BENKOUGH_FIREBASE_SENDER_ID").orElse(providers.environmentVariable("BENKOUGH_FIREBASE_SENDER_ID")).orElse("").get()
-val benkoughAdMobAppId = providers.gradleProperty("BENKOUGH_ADMOB_APP_ID").orElse(providers.environmentVariable("BENKOUGH_ADMOB_APP_ID")).orElse("ca-app-pub-3940256099942544~3347511713").get()
-val benkoughAdMobBannerId = providers.gradleProperty("BENKOUGH_ADMOB_BANNER_ID").orElse(providers.environmentVariable("BENKOUGH_ADMOB_BANNER_ID")).orElse("ca-app-pub-3940256099942544/9214589741").get()
+val configuredAdMobAppId = providers.gradleProperty("BENKOUGH_ADMOB_APP_ID").orElse(providers.environmentVariable("BENKOUGH_ADMOB_APP_ID")).orElse("").get().trim()
+val configuredAdMobBannerId = providers.gradleProperty("BENKOUGH_ADMOB_BANNER_ID").orElse(providers.environmentVariable("BENKOUGH_ADMOB_BANNER_ID")).orElse("").get().trim()
+// Invalid AdMob application IDs crash MobileAdsInitProvider before MainActivity can open.
+// Use Google's official sample IDs unless valid publisher IDs are configured.
+val benkoughAdMobAppId = configuredAdMobAppId.takeIf { Regex("^ca-app-pub-\\d{16}~\\d{10}$").matches(it) }
+    ?: "ca-app-pub-3940256099942544~3347511713"
+val benkoughAdMobBannerId = configuredAdMobBannerId.takeIf { Regex("^ca-app-pub-\\d{16}/\\d{10}$").matches(it) }
+    ?: "ca-app-pub-3940256099942544/9214589741"
 
 android {
     namespace = "com.thebenkough.app"
