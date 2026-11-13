@@ -229,9 +229,13 @@ fun InvoiceManagerScreen() {
                         Button(onClick = {
                             scope.launch {
                                 try {
-                                    SupabaseProvider.client.postgrest["invoices"].update({
-                                        set("status", "paid")
-                                    }) { filter { eq("id", invoice.id) } }
+                                    SupabaseProvider.client.functions.invoke(
+                                        function = "manage-invoice",
+                                        body = JsonObject(mapOf(
+                                            "action" to JsonPrimitive("mark_paid"),
+                                            "invoice_id" to JsonPrimitive(invoice.id)
+                                        ))
+                                    )
                                     loadInvoices()
                                 } catch (error: Exception) {
                                     status = "STATUS UPDATE FAILED · ${error.message?.take(50) ?: "TRY AGAIN"}"
@@ -244,7 +248,13 @@ fun InvoiceManagerScreen() {
                     Button(onClick = {
                         scope.launch {
                             try {
-                                SupabaseProvider.client.postgrest["invoices"].delete { filter { eq("id", invoice.id) } }
+                                SupabaseProvider.client.functions.invoke(
+                                    function = "manage-invoice",
+                                    body = JsonObject(mapOf(
+                                        "action" to JsonPrimitive("delete"),
+                                        "invoice_id" to JsonPrimitive(invoice.id)
+                                    ))
+                                )
                                 loadInvoices()
                                 status = "INVOICE DELETED"
                             } catch (error: Exception) {
