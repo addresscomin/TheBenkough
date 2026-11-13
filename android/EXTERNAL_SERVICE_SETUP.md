@@ -40,7 +40,17 @@ The home screen uses Google's official test banner by default. The application I
 
 Only use production IDs issued for this exact app. Production ad publishing and payment settings must be managed by an account owner who meets Google's age and account requirements; do not bypass those requirements.
 
-## 4. Local Gradle properties
+
+## 4. Invoice operations
+
+Invoice creation and management are handled by the deployed JWT-protected Edge Functions:
+
+- `create-invoice` verifies the signed-in non-anonymous user, checks their personal workspace, and calculates subtotal, tax and total on the server.
+- `manage-invoice` verifies the same ownership before marking an invoice paid or deleting it.
+
+The Android app must call these functions rather than writing directly to the invoice tables. The invoice tables intentionally do not grant direct client write access.
+
+## 5. Local Gradle properties
 
 For a local build, put the values in your user-level Gradle properties file rather than committing them:
 
