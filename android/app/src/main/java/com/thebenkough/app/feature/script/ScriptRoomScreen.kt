@@ -38,7 +38,7 @@ fun ScriptRoomScreen() {
     val context = LocalContext.current
     val database = remember(context) { BenkoughDatabase.getInstance(context) }
     val draftViewModel: ScriptDraftViewModel = viewModel(
-        factory = ScriptDraftViewModelFactory(database.scriptDraftDao())
+        factory = ScriptDraftViewModelFactory(database.scriptDraftDao(), database.workspaceRecordDao())
     )
     val state by draftViewModel.state.collectAsState()
     val wordCount = state.body.trim().split(Regex("\\s+")).count { it.isNotBlank() }.let {
@@ -46,103 +46,47 @@ fun ScriptRoomScreen() {
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(EditorInk)
-            .verticalScroll(rememberScrollState())
+        modifier = Modifier.fillMaxSize().background(EditorInk).verticalScroll(rememberScrollState())
             .padding(horizontal = 22.dp, vertical = 28.dp),
         verticalArrangement = Arrangement.spacedBy(17.dp)
     ) {
-        Text(
-            "THE BENKOUGH®  /  CREATOR STUDIO",
-            color = EditorLilac,
-            fontSize = 9.sp,
-            letterSpacing = 1.6.sp
-        )
-        Text(
-            "SCRIPT ROOM  /  001",
-            color = EditorLime,
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 2.sp
-        )
-        Text(
-            "WRITE THE\nFIRST LINE.",
-            color = EditorIvory,
-            fontSize = 39.sp,
-            lineHeight = 40.sp,
-            fontWeight = FontWeight.Black,
-            letterSpacing = (-1.5).sp
-        )
-        Text(
-            "A quiet place to shape the idea before it becomes a finished piece.",
-            color = EditorLilac,
-            fontSize = 13.sp,
-            lineHeight = 20.sp
-        )
-
+        Text("THE BENKOUGH®  /  CREATOR STUDIO", color = EditorLilac, fontSize = 9.sp, letterSpacing = 1.6.sp)
+        Text("SCRIPT ROOM  /  001", color = EditorLime, fontSize = 10.sp, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
+        Text("WRITE THE\\nFIRST LINE.", color = EditorIvory, fontSize = 39.sp, lineHeight = 40.sp, fontWeight = FontWeight.Black, letterSpacing = (-1.5).sp)
+        Text("A quiet place to shape the idea before it becomes a finished piece.", color = EditorLilac, fontSize = 13.sp, lineHeight = 20.sp)
         Text("DOCUMENT TITLE", color = EditorLilac, fontSize = 9.sp, letterSpacing = 1.4.sp)
         TextField(
-            value = state.title,
-            onValueChange = draftViewModel::updateTitle,
-            enabled = state.saveStatus != "LOADING DRAFT",
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            shape = RoundedCornerShape(3.dp),
-            textStyle = androidx.compose.ui.text.TextStyle(
-                color = EditorIvory,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Bold
-            ),
+            value = state.title, onValueChange = draftViewModel::updateTitle,
+            enabled = state.saveStatus != "LOADING DRAFT", modifier = Modifier.fillMaxWidth(),
+            singleLine = true, shape = RoundedCornerShape(3.dp),
+            textStyle = androidx.compose.ui.text.TextStyle(color = EditorIvory, fontSize = 17.sp, fontWeight = FontWeight.Bold),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = EditorPlum,
-                unfocusedContainerColor = EditorPlum,
-                focusedTextColor = EditorIvory,
-                unfocusedTextColor = EditorIvory,
-                cursorColor = EditorLime,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                focusedContainerColor = EditorPlum, unfocusedContainerColor = EditorPlum,
+                focusedTextColor = EditorIvory, unfocusedTextColor = EditorIvory,
+                cursorColor = EditorLime, focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent
             )
         )
-
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("YOUR SCRIPT", color = EditorLilac, fontSize = 9.sp, letterSpacing = 1.4.sp)
             Text("$wordCount WORDS", color = EditorLime, fontSize = 9.sp, letterSpacing = 1.sp)
         }
         TextField(
-            value = state.body,
-            onValueChange = draftViewModel::updateBody,
+            value = state.body, onValueChange = draftViewModel::updateBody,
             enabled = state.saveStatus != "LOADING DRAFT",
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 300.dp),
-            minLines = 12,
-            shape = RoundedCornerShape(3.dp),
-            placeholder = {
-                Text("Start with the opening line…", color = EditorLilac.copy(alpha = .65f))
-            },
-            textStyle = androidx.compose.ui.text.TextStyle(
-                color = EditorIvory,
-                fontSize = 15.sp,
-                lineHeight = 25.sp
-            ),
+            modifier = Modifier.fillMaxWidth().heightIn(min = 300.dp),
+            minLines = 12, shape = RoundedCornerShape(3.dp),
+            placeholder = { Text("Start with the opening line…", color = EditorLilac.copy(alpha = .65f)) },
+            textStyle = androidx.compose.ui.text.TextStyle(color = EditorIvory, fontSize = 15.sp, lineHeight = 25.sp),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = EditorPlum,
-                unfocusedContainerColor = EditorPlum,
-                focusedTextColor = EditorIvory,
-                unfocusedTextColor = EditorIvory,
-                cursorColor = EditorLime,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                focusedContainerColor = EditorPlum, unfocusedContainerColor = EditorPlum,
+                focusedTextColor = EditorIvory, unfocusedTextColor = EditorIvory,
+                cursorColor = EditorLime, focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent
             )
         )
         Text(state.saveStatus, color = EditorLime, fontSize = 9.sp, letterSpacing = 1.2.sp)
         Text(
-            "DRAFTS ARE SAVED LOCALLY ON THIS DEVICE. CLOUD SYNC WILL BE ADDED AFTER THE PRIVATE BACKEND IS CONNECTED.",
-            color = EditorLilac.copy(alpha = .65f),
-            fontSize = 8.sp,
-            lineHeight = 13.sp,
-            letterSpacing = .4.sp
+            "SCRIPT AUTOSAVES ON DEVICE AND SYNCS TO YOUR PRIVATE CLOUD ACCOUNT WHEN ONLINE.",
+            color = EditorLilac.copy(alpha = .65f), fontSize = 8.sp, lineHeight = 13.sp, letterSpacing = .4.sp
         )
     }
 }
