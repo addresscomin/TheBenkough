@@ -15,10 +15,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -112,8 +116,14 @@ fun NotificationCenterScreen() {
             .padding(horizontal = 22.dp, vertical = 28.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Text("THE BENKOUGH®  /  NOTIFICATION CENTRE", color = NMuted, fontSize = 9.sp, letterSpacing = 1.5.sp)
-        Text("STAY IN THE LOOP.", color = NText, fontSize = 34.sp, fontWeight = FontWeight.Black, lineHeight = 38.sp)
+        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(13.dp)) {
+            Icon(Icons.Rounded.Notifications, contentDescription = "Notifications", tint = NAccent, modifier = Modifier.size(38.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text("THE BENKOUGH®", color = NText, fontSize = 14.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.4.sp)
+                Text("NOTIFICATION CENTRE", color = NMuted, fontSize = 9.sp, letterSpacing = 1.5.sp)
+            }
+        }
+        Text("Stay in the loop.", color = NText, fontSize = 34.sp, fontWeight = FontWeight.Black, lineHeight = 38.sp)
         Text("Your private account inbox and device alert settings.", color = NMuted, fontSize = 13.sp)
         Text(message, color = NAccent, fontSize = 9.sp, letterSpacing = 1.sp)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
