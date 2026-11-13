@@ -51,11 +51,11 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.roundToLong
 
-private val IInk = Color(0xFF17101E)
-private val IPanel = Color(0xFF211329)
-private val IText = Color(0xFFF2E9DE)
-private val IMuted = Color(0xFFB7A7C9)
-private val IAccent = Color(0xFFDDF27A)
+private val IInk = Color(0xFF050608)
+private val IPanel = Color(0xCC111922)
+private val IText = Color(0xFFF4F7FB)
+private val IMuted = Color(0xFF929EAD)
+private val IAccent = Color(0xFF77E6D2)
 
 @Serializable
 private data class InvoiceRow(
@@ -195,7 +195,7 @@ fun InvoiceManagerScreen() {
             },
             enabled = !busy,
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(3.dp),
+            shape = RoundedCornerShape(18.dp),
             colors = ButtonDefaults.buttonColors(containerColor = IAccent, contentColor = IInk)
         ) { Text(if (busy) "SAVING…" else "CREATE INVOICE  ↗", fontWeight = FontWeight.Black) }
 
@@ -205,7 +205,7 @@ fun InvoiceManagerScreen() {
             Text("${invoices.size} TOTAL", color = IAccent, fontSize = 9.sp)
         }
         invoices.forEach { invoice ->
-            Column(modifier = Modifier.fillMaxWidth().background(IPanel, RoundedCornerShape(4.dp)).padding(14.dp),
+            Column(modifier = Modifier.fillMaxWidth().background(IPanel, RoundedCornerShape(18.dp)).padding(14.dp),
                 verticalArrangement = Arrangement.spacedBy(7.dp)) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(invoice.invoiceNumber, color = IText, fontWeight = FontWeight.Bold, fontSize = 14.sp)
