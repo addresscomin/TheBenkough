@@ -29,9 +29,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.room.Room
 import com.thebenkough.app.data.local.BenkoughDatabase
 import com.thebenkough.app.data.local.WorkspaceRecordEntity
+import com.thebenkough.app.data.remote.WorkspaceCloudBackup
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -60,11 +60,10 @@ fun WorkspaceRecordsScreen(
     var entryTitle by rememberSaveable(module) { mutableStateOf("") }
     var entryDetails by rememberSaveable(module) { mutableStateOf("") }
     var message by rememberSaveable(module) { mutableStateOf("SAVED ON THIS DEVICE") }
+    var backupBusy by rememberSaveable { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(PageInk)
+        modifier = Modifier.fillMaxSize().background(PageInk)
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 22.dp, vertical = 28.dp),
         verticalArrangement = Arrangement.spacedBy(15.dp)
@@ -75,48 +74,47 @@ fun WorkspaceRecordsScreen(
         Text(description, color = PageLilac, fontSize = 13.sp, lineHeight = 20.sp)
 
         Text("CREATE NEW ENTRY", color = PageLime, fontSize = 9.sp, letterSpacing = 1.5.sp)
-        OutlinedTextField(
-            value = entryTitle,
-            onValueChange = { entryTitle = it },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            label = { Text(titleHint) },
-            colors = fieldColors()
-        )
-        OutlinedTextField(
-            value = entryDetails,
-            onValueChange = { entryDetails = it },
-            modifier = Modifier.fillMaxWidth(),
-            minLines = 3,
-            label = { Text(detailsHint) },
-            colors = fieldColors()
-        )
+        OutlinedTextField(value = entryTitle, onValueChange = { entryTitle = it },
+            modifier = Modifier.fillMaxWidth(), singleLine = true,
+            label = { Text(titleHint) }, colors = fieldColors())
+        OutlinedTextField(value = entryDetails, onValueChange = { entryDetails = it },
+            modifier = Modifier.fillMaxWidth(), minLines = 3,
+            label = { Text(detailsHint) }, colors = fieldColors())
         Button(
             onClick = {
                 val cleanTitle = entryTitle.trim()
                 if (cleanTitle.isNotEmpty()) {
                     scope.launch {
-                        dao.insert(
-                            WorkspaceRecordEntity(
-                                module = module,
-                                title = cleanTitle,
-                                details = entryDetails.trim()
-                            )
-                        )
+                        dao.insert(WorkspaceRecordEntity(module = module, title = cleanTitle, details = entryDetails.trim()))
                         entryTitle = ""
                         entryDetails = ""
-                        message = "ENTRY SAVED"
+                        message = "ENTRY SAVED ON THIS DEVICE"
                     }
-                } else {
-                    message = "ADD A TITLE FIRST"
+                } else message = "ADD A TITLE FIRST"
+            },
+            modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(3.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = PageLime, contentColor = PageInk)
+        ) { Text("SAVE ENTRY  ↗", fontWeight = FontWeight.Black, letterSpacing = 1.sp) }
+
+        Button(
+            onClick = {
+                scope.launch {
+                    backupBusy = true
+                    message = "BACKING UP ALL WORKSPACE ENTRIES…"
+                    try {
+                        val count = WorkspaceCloudBackup.backup(dao.getAll())
+                        message = "CLOUD BACKUP COMPLETE · $count RECORDS"
+                    } catch (error: Exception) {
+                        message = "BACKUP FAILED · ${error.message?.take(72) ?: "CHECK CONNECTION"}"
+                    } finally {
+                        backupBusy = false
+                    }
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(3.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = PageLime, contentColor = PageInk)
-        ) {
-            Text("SAVE ENTRY  ↗", fontWeight = FontWeight.Black, letterSpacing = 1.sp)
-        }
+            enabled = !backupBusy,
+            modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(3.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = PagePlum, contentColor = PageLime)
+        ) { Text(if (backupBusy) "BACKING UP…" else "BACK UP ALL WORKSPACE DATA  ↗", fontWeight = FontWeight.Bold, letterSpacing = .7.sp) }
         Text(message, color = PageLilac, fontSize = 9.sp, letterSpacing = 1.2.sp)
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -125,69 +123,40 @@ fun WorkspaceRecordsScreen(
         }
 
         if (records.isEmpty()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(PagePlum, RoundedCornerShape(3.dp))
-                    .padding(18.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
+            Column(modifier = Modifier.fillMaxWidth().background(PagePlum, RoundedCornerShape(3.dp)).padding(18.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text("NOTHING HERE YET.", color = PageIvory, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text("Create your first entry above. It will be stored locally on this device.", color = PageLilac, fontSize = 12.sp, lineHeight = 18.sp)
             }
         } else {
             records.forEach { record ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(PagePlum, RoundedCornerShape(3.dp))
-                        .padding(15.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+                Column(modifier = Modifier.fillMaxWidth().background(PagePlum, RoundedCornerShape(3.dp)).padding(15.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(record.title, color = PageIvory, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    if (record.details.isNotBlank()) {
-                        Text(record.details, color = PageLilac, fontSize = 13.sp, lineHeight = 19.sp)
-                    }
+                    if (record.details.isNotBlank()) Text(record.details, color = PageLilac, fontSize = 13.sp, lineHeight = 19.sp)
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(
-                            SimpleDateFormat("dd MMM yyyy · HH:mm", Locale.getDefault()).format(Date(record.updatedAt)),
-                            color = PageLilac.copy(alpha = .7f),
-                            fontSize = 9.sp
-                        )
-                        Text(
-                            "DELETE",
-                            color = Color(0xFFE9A5A5),
-                            fontSize = 9.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(4.dp)
-                        )
+                        Text(SimpleDateFormat("dd MMM yyyy · HH:mm", Locale.getDefault()).format(Date(record.updatedAt)),
+                            color = PageLilac.copy(alpha = .7f), fontSize = 9.sp)
+                        Text("LOCAL RECORD", color = PageLime, fontSize = 9.sp, fontWeight = FontWeight.Bold)
                     }
-                    Button(
-                        onClick = { scope.launch { dao.delete(record.id) } },
+                    Button(onClick = { scope.launch { dao.delete(record.id) } },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF482633), contentColor = Color(0xFFFFD6D6)),
-                        shape = RoundedCornerShape(2.dp)
-                    ) {
+                        shape = RoundedCornerShape(2.dp)) {
                         Text("DELETE ENTRY", fontSize = 9.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
         }
         Text(
-            "LOCAL MODE: ENTRIES STAY ON THIS DEVICE. CLOUD SYNC IS NOT ACTIVE UNTIL THE PRIVATE BACKEND IS CONNECTED.",
-            color = PageLilac.copy(alpha = .65f),
-            fontSize = 8.sp,
-            lineHeight = 13.sp
+            "CLOUD BACKUP IS MANUAL AND ONE-WAY: IT COPIES ALL LOCAL ENTRIES TO YOUR SIGNED-IN ACCOUNT. RESTORE AND AUTOMATIC MULTI-DEVICE SYNC ARE NOT ENABLED YET.",
+            color = PageLilac.copy(alpha = .65f), fontSize = 8.sp, lineHeight = 13.sp
         )
     }
 }
 
 @Composable
 private fun fieldColors() = OutlinedTextFieldDefaults.colors(
-    focusedTextColor = PageIvory,
-    unfocusedTextColor = PageIvory,
-    focusedBorderColor = PageLime,
-    unfocusedBorderColor = PageLilac.copy(alpha = .45f),
-    focusedLabelColor = PageLime,
-    unfocusedLabelColor = PageLilac,
-    cursorColor = PageLime
+    focusedTextColor = PageIvory, unfocusedTextColor = PageIvory,
+    focusedBorderColor = PageLime, unfocusedBorderColor = PageLilac.copy(alpha = .45f),
+    focusedLabelColor = PageLime, unfocusedLabelColor = PageLilac, cursorColor = PageLime
 )
