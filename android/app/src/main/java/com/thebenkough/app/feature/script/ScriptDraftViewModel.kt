@@ -31,6 +31,7 @@ class ScriptDraftViewModel(
     private val _state = MutableStateFlow(ScriptDraftUiState())
     val state: StateFlow<ScriptDraftUiState> = _state.asStateFlow()
     private var loaded = false
+    private var signedInUserId: String? = null
     private var saveJob: Job? = null
 
     init {
@@ -40,6 +41,7 @@ class ScriptDraftViewModel(
                 _state.update { it.copy(saveStatus = "SIGN IN TO SAVE YOUR SCRIPT") }
                 return@launch
             }
+            signedInUserId = userId
             val saved = dao.getDraft()
             if (saved != null) {
                 _state.update { it.copy(title = saved.title, body = saved.body, saveStatus = "SAVED ON THIS DEVICE") }
@@ -62,6 +64,7 @@ class ScriptDraftViewModel(
 
     private fun queueSave() {
         if (!loaded) return
+        val userId = signedInUserId ?: return
         saveJob?.cancel()
         _state.update { it.copy(saveStatus = "SAVING…") }
         saveJob = viewModelScope.launch {
