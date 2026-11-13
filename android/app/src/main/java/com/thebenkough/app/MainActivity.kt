@@ -49,7 +49,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
-import com.thebenkough.app.feature.auth.PhoneAuthScreen
+import com.thebenkough.app.feature.auth.AccountAuthScreen
 import com.thebenkough.app.data.remote.SupabaseProvider
 import io.github.jan.supabase.auth.auth
 import com.thebenkough.app.feature.script.ScriptRoomScreen
@@ -125,7 +125,7 @@ private fun BenkoughApp() {
     }
 
     if (!authenticated) {
-        PhoneAuthScreen(onAuthenticated = { authenticated = true })
+        AccountAuthScreen(onAuthenticated = { authenticated = true })
         return
     }
 
