@@ -66,6 +66,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     implementation(libs.ktor.client.android)
     implementation(libs.kotlinx.coroutines.android)
+    implementation("com.google.android.gms:play-services-ads:25.5.0")
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
