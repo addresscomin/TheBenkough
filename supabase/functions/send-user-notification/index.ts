@@ -48,7 +48,10 @@ Deno.serve(async (req: Request) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const serviceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    const legacyAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    const publishableKeysRaw = Deno.env.get("SUPABASE_PUBLISHABLE_KEYS");
+    const publishableKeys = publishableKeysRaw ? JSON.parse(publishableKeysRaw) : {};
+    const anonKey = legacyAnonKey ?? publishableKeys.default ?? Object.values(publishableKeys)[0];
     if (!supabaseUrl || !serviceRole || !anonKey) {
       throw new Error("Supabase server environment is incomplete.");
     }
@@ -72,6 +75,17 @@ Deno.serve(async (req: Request) => {
     const admin = createClient(supabaseUrl, serviceRole, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
+    const { data: recent } = await admin
+      .from("notifications")
+      .select("created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (recent?.created_at && Date.now() - new Date(recent.created_at).getTime() < 30_000) {
+      return Response.json({ error: "Please wait before sending another notification." }, { status: 429 });
+    }
+
     const { data: notification, error: insertError } = await admin
       .from("notifications")
       .insert({ user_id: user.id, title, body, data: { source: "benkough_app" } })
