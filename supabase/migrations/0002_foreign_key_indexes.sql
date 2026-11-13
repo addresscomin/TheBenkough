@@ -1,0 +1,16 @@
+-- Performance indexes for foreign-key joins and deletes.
+create index if not exists idx_activity_events_actor_id on public.activity_events(actor_id);
+create index if not exists idx_assets_project_id on public.assets(project_id);
+create index if not exists idx_assets_uploaded_by on public.assets(uploaded_by);
+create index if not exists idx_content_items_created_by on public.content_items(created_by);
+create index if not exists idx_content_items_project_id on public.content_items(project_id);
+create index if not exists idx_device_tokens_user_id on public.device_tokens(user_id);
+create index if not exists idx_invoice_items_invoice_id on public.invoice_items(invoice_id);
+create index if not exists idx_invoices_client_id on public.invoices(client_id);
+create index if not exists idx_invoices_created_by on public.invoices(created_by);
+create index if not exists idx_leads_client_id on public.leads(client_id);
+create index if not exists idx_projects_created_by on public.projects(created_by);
+create index if not exists idx_tasks_assigned_to on public.tasks(assigned_to);
+create index if not exists idx_tasks_created_by on public.tasks(created_by);
+create index if not exists idx_tasks_project_id on public.tasks(project_id);
+create index if not exists idx_workspaces_owner_id on public.workspaces(owner_id);

@@ -1,0 +1,48 @@
+name: Android build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [android-foundation]
+    paths:
+      - "android/**"
+      - ".github/workflows/android-build.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "android/**"
+      - ".github/workflows/android-build.yml"
+
+concurrency:
+  group: android-final-build
+  cancel-in-progress: false
+
+jobs:
+  debug-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.13"
+      - name: Assemble debug APK
+        env:
+          BENKOUGH_FIREBASE_APP_ID: ${{ secrets.BENKOUGH_FIREBASE_APP_ID }}
+          BENKOUGH_FIREBASE_API_KEY: ${{ secrets.BENKOUGH_FIREBASE_API_KEY }}
+          BENKOUGH_FIREBASE_PROJECT_ID: ${{ secrets.BENKOUGH_FIREBASE_PROJECT_ID }}
+          BENKOUGH_FIREBASE_SENDER_ID: ${{ secrets.BENKOUGH_FIREBASE_SENDER_ID }}
+          BENKOUGH_ADMOB_APP_ID: ${{ secrets.BENKOUGH_ADMOB_APP_ID }}
+          BENKOUGH_ADMOB_BANNER_ID: ${{ secrets.BENKOUGH_ADMOB_BANNER_ID }}
+        run: gradle -p android :app:assembleDebug
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: the-benkough-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7
