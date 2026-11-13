@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.kapt)
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -19,7 +20,6 @@ android {
         buildConfigField("String", "SUPABASE_PUBLISHABLE_KEY", "\"sb_publishable_uhDy1U2vs9vpF2BuvTzbGQ_4U7-N3kx\"")
     }
 
-    // Keep Java and Kotlin bytecode targets aligned for Room/KAPT and CI.
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.supabase.auth)
     implementation(libs.supabase.postgrest)
     implementation(libs.supabase.storage)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     implementation(libs.ktor.client.android)
     implementation(libs.kotlinx.coroutines.android)
 
