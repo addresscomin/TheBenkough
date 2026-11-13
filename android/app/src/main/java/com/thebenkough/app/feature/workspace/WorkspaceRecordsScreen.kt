@@ -1,5 +1,12 @@
 package com.thebenkough.app.feature.workspace
 
+import android.content.Context
+import android.graphics.Paint
+import android.graphics.Typeface
+import android.graphics.pdf.PdfDocument
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,7 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,6 +43,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
 
 private val PageInk = Color(0xFF17101E)
 private val PagePlum = Color(0xFF211329)
@@ -53,14 +61,30 @@ fun WorkspaceRecordsScreen(
     detailsHint: String = "Notes, details, next steps…"
 ) {
     val context = LocalContext.current
-    val database = remember(context) { BenkoughDatabase.getInstance(context) }
-    val dao = database.workspaceRecordDao()
+    val dao = remember(context) { BenkoughDatabase.getInstance(context).workspaceRecordDao() }
     val records by dao.observeModule(module).collectAsState(initial = emptyList())
     val scope = rememberCoroutineScope()
     var entryTitle by rememberSaveable(module) { mutableStateOf("") }
     var entryDetails by rememberSaveable(module) { mutableStateOf("") }
     var message by rememberSaveable(module) { mutableStateOf("SAVED ON THIS DEVICE") }
-    var backupBusy by rememberSaveable { mutableStateOf(false) }
+    var syncBusy by rememberSaveable { mutableStateOf(false) }
+    var editingId by rememberSaveable(module) { mutableStateOf<Long?>(null) }
+    var editTitle by rememberSaveable(module) { mutableStateOf("") }
+    var editDetails by rememberSaveable(module) { mutableStateOf("") }
+    var pdfRecord by remember { mutableStateOf<WorkspaceRecordEntity?>(null) }
+
+    val pdfLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri ->
+        val selected = pdfRecord
+        if (uri != null && selected != null) {
+            message = try {
+                writeRecordPdf(context, uri, selected)
+                "PDF EXPORTED"
+            } catch (error: Exception) {
+                "PDF EXPORT FAILED · ${error.message?.take(60) ?: "TRY AGAIN"}"
+            }
+        }
+        pdfRecord = null
+    }
 
     Column(
         modifier = Modifier.fillMaxSize().background(PageInk)
@@ -85,7 +109,12 @@ fun WorkspaceRecordsScreen(
                 val cleanTitle = entryTitle.trim()
                 if (cleanTitle.isNotEmpty()) {
                     scope.launch {
-                        dao.insert(WorkspaceRecordEntity(module = module, title = cleanTitle, details = entryDetails.trim()))
+                        dao.insert(WorkspaceRecordEntity(
+                            module = module,
+                            title = cleanTitle,
+                            details = entryDetails.trim(),
+                            cloudKey = UUID.randomUUID().toString()
+                        ))
                         entryTitle = ""
                         entryDetails = ""
                         message = "ENTRY SAVED ON THIS DEVICE"
@@ -99,22 +128,22 @@ fun WorkspaceRecordsScreen(
         Button(
             onClick = {
                 scope.launch {
-                    backupBusy = true
-                    message = "BACKING UP ALL WORKSPACE ENTRIES…"
+                    syncBusy = true
+                    message = "SYNCING LOCAL + CLOUD RECORDS…"
                     try {
-                        val count = WorkspaceCloudBackup.backup(dao.getAll())
-                        message = "CLOUD BACKUP COMPLETE · $count RECORDS"
+                        val merged = WorkspaceCloudBackup.sync(dao)
+                        message = "SYNC COMPLETE · $merged CLOUD RECORDS MERGED"
                     } catch (error: Exception) {
-                        message = "BACKUP FAILED · ${error.message?.take(72) ?: "CHECK CONNECTION"}"
+                        message = "SYNC FAILED · LOCAL DATA IS SAFE · ${error.message?.take(58) ?: "CHECK CONNECTION"}"
                     } finally {
-                        backupBusy = false
+                        syncBusy = false
                     }
                 }
             },
-            enabled = !backupBusy,
+            enabled = !syncBusy,
             modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(3.dp),
             colors = ButtonDefaults.buttonColors(containerColor = PagePlum, contentColor = PageLime)
-        ) { Text(if (backupBusy) "BACKING UP…" else "BACK UP ALL WORKSPACE DATA  ↗", fontWeight = FontWeight.Bold, letterSpacing = .7.sp) }
+        ) { Text(if (syncBusy) "SYNCING…" else "SYNC NOW · UPLOAD + RESTORE  ↗", fontWeight = FontWeight.Bold, letterSpacing = .7.sp) }
         Text(message, color = PageLilac, fontSize = 9.sp, letterSpacing = 1.2.sp)
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -132,26 +161,90 @@ fun WorkspaceRecordsScreen(
             records.forEach { record ->
                 Column(modifier = Modifier.fillMaxWidth().background(PagePlum, RoundedCornerShape(3.dp)).padding(15.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(record.title, color = PageIvory, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    if (record.details.isNotBlank()) Text(record.details, color = PageLilac, fontSize = 13.sp, lineHeight = 19.sp)
+                    if (editingId == record.id) {
+                        OutlinedTextField(value = editTitle, onValueChange = { editTitle = it }, modifier = Modifier.fillMaxWidth(),
+                            singleLine = true, label = { Text("Edit title") }, colors = fieldColors())
+                        OutlinedTextField(value = editDetails, onValueChange = { editDetails = it }, modifier = Modifier.fillMaxWidth(),
+                            minLines = 3, label = { Text("Edit details") }, colors = fieldColors())
+                        Button(onClick = {
+                            scope.launch {
+                                dao.upsert(record.copy(title = editTitle.trim().ifBlank { record.title },
+                                    details = editDetails.trim(), updatedAt = System.currentTimeMillis()))
+                                editingId = null
+                                message = "ENTRY UPDATED"
+                            }
+                        }, colors = ButtonDefaults.buttonColors(containerColor = PageLime, contentColor = PageInk)) {
+                            Text("SAVE CHANGES", fontSize = 10.sp, fontWeight = FontWeight.Black)
+                        }
+                    } else {
+                        Text(record.title, color = PageIvory, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        if (record.details.isNotBlank()) Text(record.details, color = PageLilac, fontSize = 13.sp, lineHeight = 19.sp)
+                    }
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(SimpleDateFormat("dd MMM yyyy · HH:mm", Locale.getDefault()).format(Date(record.updatedAt)),
                             color = PageLilac.copy(alpha = .7f), fontSize = 9.sp)
-                        Text("LOCAL RECORD", color = PageLime, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                        Text("LOCAL + CLOUD READY", color = PageLime, fontSize = 9.sp, fontWeight = FontWeight.Bold)
                     }
-                    Button(onClick = { scope.launch { dao.delete(record.id) } },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF482633), contentColor = Color(0xFFFFD6D6)),
-                        shape = RoundedCornerShape(2.dp)) {
-                        Text("DELETE ENTRY", fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                    if (module == "INVOICES") {
+                        Button(onClick = {
+                            pdfRecord = record
+                            pdfLauncher.launch("${record.title.replace(Regex("[^A-Za-z0-9_-]"), "_")}.pdf")
+                        }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3933B8), contentColor = Color.White)) {
+                            Text("EXPORT PDF", fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(onClick = {
+                            editingId = record.id
+                            editTitle = record.title
+                            editDetails = record.details
+                        }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3933B8), contentColor = Color.White),
+                            shape = RoundedCornerShape(2.dp)) {
+                            Text("EDIT", fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                        }
+                        Button(onClick = {
+                            scope.launch {
+                                dao.softDelete(record.id)
+                                message = "ENTRY REMOVED · SYNC TO PROPAGATE DELETE"
+                            }
+                        }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF482633), contentColor = Color(0xFFFFD6D6)),
+                            shape = RoundedCornerShape(2.dp)) {
+                            Text("DELETE", fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                        }
                     }
                 }
             }
         }
         Text(
-            "CLOUD BACKUP IS MANUAL AND ONE-WAY: IT COPIES ALL LOCAL ENTRIES TO YOUR SIGNED-IN ACCOUNT. RESTORE AND AUTOMATIC MULTI-DEVICE SYNC ARE NOT ENABLED YET.",
+            "SYNC NOW MERGES THE NEWER COPY FROM CLOUD AND UPLOADS LOCAL CHANGES. DELETIONS ARE SYNCED AS TOMBSTONES. SYNC REQUIRES INTERNET AND A SIGNED-IN ACCOUNT.",
             color = PageLilac.copy(alpha = .65f), fontSize = 8.sp, lineHeight = 13.sp
         )
     }
+}
+
+private fun writeRecordPdf(context: Context, uri: Uri, record: WorkspaceRecordEntity) {
+    val document = PdfDocument()
+    val page = document.startPage(PdfDocument.PageInfo.Builder(595, 842, 1).create())
+    val canvas = page.canvas
+    val heading = Paint(Paint.ANTI_ALIAS_FLAG).apply { textSize = 22f; typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD) }
+    val sub = Paint(Paint.ANTI_ALIAS_FLAG).apply { textSize = 11f; color = android.graphics.Color.DKGRAY }
+    val body = Paint(Paint.ANTI_ALIAS_FLAG).apply { textSize = 13f; color = android.graphics.Color.BLACK }
+    canvas.drawText("THE BENKOUGH", 44f, 62f, heading)
+    canvas.drawText(if (record.module == "INVOICES") "INVOICE RECORD" else record.module, 44f, 88f, sub)
+    canvas.drawLine(44f, 108f, 550f, 108f, Paint().apply { color = android.graphics.Color.LTGRAY; strokeWidth = 1f })
+    canvas.drawText(record.title.take(70), 44f, 145f, heading)
+    canvas.drawText("Created: " + SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()).format(Date(record.updatedAt)), 44f, 172f, sub)
+    var y = 215f
+    record.details.split("\n").flatMap { line -> line.chunked(78) }.forEach { line ->
+        if (y < 790f) {
+            canvas.drawText(line, 44f, y, body)
+            y += 22f
+        }
+    }
+    document.finishPage(page)
+    context.contentResolver.openOutputStream(uri)?.use { document.writeTo(it) }
+        ?: error("Could not open selected PDF destination")
+    document.close()
 }
 
 @Composable
