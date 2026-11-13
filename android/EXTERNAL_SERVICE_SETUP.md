@@ -1,12 +1,18 @@
 # THE BENKOUGH — external service configuration
 
-The Android source is wired for real phone OTP, Firebase Cloud Messaging, Supabase-backed notifications, and AdMob. The following provider-owned values must be supplied by the account owner; they must never be committed to the repository.
+## 1. Username and password authentication
 
-## 1. Phone ownership OTP
+The Android app signs users up and signs them in through Supabase Auth password sessions. The user enters a username and password; the app maps the username to an internal, non-deliverable Auth email identifier under `users.thebenkough.app`. This is an implementation detail and is not a contact email.
 
-The app now uses Supabase Auth SMS OTP. It does not generate a local code, accept a guessed code, or mark a phone number verified without Supabase verifying the SMS challenge.
+Before enabling signup on the hosted Supabase project:
+- Enable the Email provider.
+- Turn **Confirm email** off, because the internal username identifier cannot receive confirmation mail.
+- Keep anonymous sign-ins disabled.
+- Do not describe these accounts as having verified email or phone ownership.
 
-In the Supabase project, enable the Phone provider and configure an authorized SMS delivery provider. Keep phone confirmation enabled. Supabase's phone OTP flow requires a configured SMS provider; the Android app cannot deliver SMS by itself. Until the provider is configured, the app will show the provider error rather than granting a session.
+Usernames are stored in `public.profiles.username`, normalized to lowercase, and protected by a unique index. Passwords are handled by Supabase Auth; the app does not store plaintext passwords.
+
+**Password recovery is not available for username-only accounts.** Add and verify a real recovery email to each account before implementing self-service password reset. Do not send reset links to the internal identifier.
 
 ## 2. Firebase Cloud Messaging
 
@@ -40,7 +46,6 @@ The home screen uses Google's official test banner by default. The application I
 
 Only use production IDs issued for this exact app. Production ad publishing and payment settings must be managed by an account owner who meets Google's age and account requirements; do not bypass those requirements.
 
-
 ## 4. Invoice operations
 
 Invoice creation and management are handled by the deployed JWT-protected Edge Functions:
@@ -58,11 +63,6 @@ For a local build, put the values in your user-level Gradle properties file rath
 
 Use the same property names listed above. GitHub Actions reads the matching repository secrets automatically. Missing Firebase values leave remote push disabled but do not prevent a debug APK from building with test ads.
 
+## 6. Retired phone access endpoint
 
-## 6. Legacy custom access-code endpoint (retired)
-
-The old `register-phone-access` endpoint has been replaced with a 410-disabled response. It previously created accounts with `phone_confirm: true` before proving phone ownership and must not be used.
-
-The Android app currently uses Supabase Auth's native six-digit numeric SMS OTP flow. Supabase Auth owns the challenge, expiry, attempt checks, phone confirmation, and authenticated session. A six-character mixed alphanumeric custom code is not interchangeable with Supabase's native SMS OTP token and must not be displayed as a phone-verification code. Do not re-enable the legacy endpoint.
-
-To enable real SMS delivery, the project owner must configure an approved SMS provider in Supabase Auth. In India, sender identity and message templates may require the business's applicable DLT registration and provider approval. No SMS delivery is claimed until a real phone test succeeds.
+The old `register-phone-access` endpoint remains disabled with HTTP 410. It must not be re-enabled because it created accounts with phone-confirmed status before proving phone ownership. The Android app no longer uses phone OTP.
