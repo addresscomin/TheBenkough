@@ -29,6 +29,13 @@ jobs:
         with:
           gradle-version: "8.13"
       - name: Assemble debug APK
+        env:
+          BENKOUGH_FIREBASE_APP_ID: ${{ secrets.BENKOUGH_FIREBASE_APP_ID }}
+          BENKOUGH_FIREBASE_API_KEY: ${{ secrets.BENKOUGH_FIREBASE_API_KEY }}
+          BENKOUGH_FIREBASE_PROJECT_ID: ${{ secrets.BENKOUGH_FIREBASE_PROJECT_ID }}
+          BENKOUGH_FIREBASE_SENDER_ID: ${{ secrets.BENKOUGH_FIREBASE_SENDER_ID }}
+          BENKOUGH_ADMOB_APP_ID: ${{ secrets.BENKOUGH_ADMOB_APP_ID }}
+          BENKOUGH_ADMOB_BANNER_ID: ${{ secrets.BENKOUGH_ADMOB_BANNER_ID }}
         run: gradle -p android :app:assembleDebug
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
