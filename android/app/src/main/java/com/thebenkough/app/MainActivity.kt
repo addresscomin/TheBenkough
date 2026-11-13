@@ -47,6 +47,7 @@ import io.github.jan.supabase.auth.auth
 import com.thebenkough.app.feature.script.ScriptRoomScreen
 import com.thebenkough.app.feature.workspace.WorkspaceRecordsScreen
 import com.thebenkough.app.feature.notifications.NotificationCenterScreen
+import com.thebenkough.app.feature.vault.ProjectVaultScreen
 
 private val Plum = Color(0xFF211329)
 private val Ink = Color(0xFF17101E)
@@ -159,18 +160,8 @@ private fun BenkoughApp() {
                         ),
                         onOpen = { destination = it }
                     )
-                    Destination.VAULT_HUB -> WorkspaceRecordsScreen(
-                        module = "ASSETS",
-                        eyebrow = "03 / PROJECT VAULT",
-                        title = "KEEP THE IMPORTANT THINGS.",
-                        description = "Create searchable records for assets, references and project files. File upload and cloud storage are separate integration work."
-                    )
-                    Destination.ASSETS -> WorkspaceRecordsScreen(
-                        module = "ASSETS",
-                        eyebrow = "03 / PROJECT VAULT",
-                        title = "KEEP THE IMPORTANT THINGS.",
-                        description = "Create searchable records for assets, references and project files. File upload and cloud storage are separate integration work."
-                    )
+                    Destination.VAULT_HUB -> ProjectVaultScreen()
+                    Destination.ASSETS -> ProjectVaultScreen()
                     Destination.SCRIPT -> ScriptRoomScreen()
                     Destination.STORYBOARD -> RecordsPage("STORYBOARD", "SCENES & SEQUENCES", "Build a scene list with shot ideas, order and production notes.", "Scene name", "Visual, dialogue, shot and sequence notes…")
                     Destination.CAPTIONS -> RecordsPage("CAPTIONS", "CAPTION WORKSHOP", "Draft and store captions, descriptions and calls to action.", "Caption title", "Caption text, CTA and platform notes…")
