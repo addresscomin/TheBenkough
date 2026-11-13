@@ -32,11 +32,11 @@ import com.thebenkough.app.data.remote.ProjectVaultRepository
 import com.thebenkough.app.data.remote.VaultAsset
 import kotlinx.coroutines.launch
 
-private val VInk = Color(0xFF17101E)
-private val VPanel = Color(0xFF211329)
-private val VText = Color(0xFFF2E9DE)
-private val VMuted = Color(0xFFB7A7C9)
-private val VAccent = Color(0xFFDDF27A)
+private val VInk = Color(0xFF050608)
+private val VPanel = Color(0xCC111922)
+private val VText = Color(0xFFF4F7FB)
+private val VMuted = Color(0xFF929EAD)
+private val VAccent = Color(0xFF77E6D2)
 
 @Composable
 fun ProjectVaultScreen() {
@@ -127,7 +127,7 @@ fun ProjectVaultScreen() {
         } else {
             assets.forEach { asset ->
                 Column(
-                    modifier = Modifier.fillMaxWidth().background(VPanel, RoundedCornerShape(4.dp)).padding(15.dp),
+                    modifier = Modifier.fillMaxWidth().background(VPanel, RoundedCornerShape(18.dp)).padding(15.dp),
                     verticalArrangement = Arrangement.spacedBy(7.dp)
                 ) {
                     Text(asset.originalName, color = VText, fontSize = 14.sp, fontWeight = FontWeight.Bold)
