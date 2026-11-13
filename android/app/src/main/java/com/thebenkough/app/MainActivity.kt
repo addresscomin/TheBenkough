@@ -45,18 +45,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.thebenkough.app.feature.auth.PhoneAuthScreen
 import com.thebenkough.app.data.remote.SupabaseProvider
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.MobileAds
 import io.github.jan.supabase.auth.auth
 import com.thebenkough.app.feature.script.ScriptRoomScreen
 import com.thebenkough.app.feature.workspace.WorkspaceRecordsScreen
@@ -299,18 +293,19 @@ private fun HomeScreen(onCreate: () -> Unit, onBusiness: () -> Unit, onVault: ()
 @Composable
 private fun AdMobTestBanner() {
     val context = LocalContext.current
-    LaunchedEffect(Unit) { MobileAds.initialize(context) {} }
-    val adView = remember(context) {
-        AdView(context).apply {
-            adUnitId = "ca-app-pub-3940256099942544/9214589741"
-            setAdSize(AdSize.BANNER)
-            loadAd(AdRequest.Builder().build())
+    var initialized by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { MobileAds.initialize(context) { initialized = true } }
+    if (initialized) {
+        val adView = remember(context) {
+            AdView(context).apply {
+                adUnitId = "ca-app-pub-3940256099942544/9214589741"
+                setAdSize(AdSize.BANNER)
+                loadAd(AdRequest.Builder().build())
+            }
         }
+        DisposableEffect(adView) { onDispose { adView.destroy() } }
+        AndroidView(factory = { adView }, modifier = Modifier.fillMaxWidth())
     }
-    DisposableEffect(adView) {
-        onDispose { adView.destroy() }
-    }
-    AndroidView(factory = { adView }, modifier = Modifier.fillMaxWidth())
 }
 
 @Composable
