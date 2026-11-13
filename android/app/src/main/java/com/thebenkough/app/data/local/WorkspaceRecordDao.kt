@@ -11,6 +11,9 @@ interface WorkspaceRecordDao {
     @Query("SELECT * FROM workspace_records WHERE module = :module ORDER BY updatedAt DESC")
     fun observeModule(module: String): Flow<List<WorkspaceRecordEntity>>
 
+    @Query("SELECT * FROM workspace_records ORDER BY updatedAt DESC")
+    suspend fun getAll(): List<WorkspaceRecordEntity>
+
     @Insert
     suspend fun insert(record: WorkspaceRecordEntity)
 
