@@ -36,10 +36,10 @@ object PushRegistration {
     }
 
     suspend fun registerCurrentDevice(context: Context): String = withContext(Dispatchers.IO) {
+        firebaseApp(context)
         val userId = SupabaseProvider.client.auth.currentUserOrNull()?.id
             ?: error("Sign in before registering push notifications.")
-        val app = firebaseApp(context)
-        val token = Tasks.await(FirebaseMessaging.getInstance(app).token)
+        val token = Tasks.await(FirebaseMessaging.getInstance().token)
         saveTokenForUser(userId, token)
         "PUSH TOKEN REGISTERED"
     }
@@ -57,10 +57,8 @@ object PushRegistration {
                 "platform" to JsonPrimitive("android")
             )
         )
-        SupabaseProvider.client.postgrest["device_tokens"].insert(
-            row,
-            upsert = true,
+        SupabaseProvider.client.postgrest["device_tokens"].upsert(row) {
             onConflict = "fcm_token"
-        )
+        }
     }
 }
