@@ -29,6 +29,8 @@ android {
         buildConfigField("String", "FIREBASE_API_KEY", "\"$benkoughFirebaseApiKey\"")
         buildConfigField("String", "FIREBASE_PROJECT_ID", "\"$benkoughFirebaseProjectId\"")
         buildConfigField("String", "FIREBASE_SENDER_ID", "\"$benkoughFirebaseSenderId\"")
+        buildConfigField("String", "ADMOB_BANNER_ID", "\"$benkoughAdMobBannerId\"")
+        manifestPlaceholders["ADMOB_APP_ID"] = benkoughAdMobAppId
     }
 
     compileOptions {
