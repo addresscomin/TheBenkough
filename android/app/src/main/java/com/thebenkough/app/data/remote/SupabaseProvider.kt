@@ -5,6 +5,7 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.storage.Storage
+import io.github.jan.supabase.functions.Functions
 
 /**
  * Shared Supabase client for the Android app.
@@ -20,5 +21,6 @@ object SupabaseProvider {
         install(Auth)
         install(Postgrest)
         install(Storage)
+        install(Functions)
     }
 }
