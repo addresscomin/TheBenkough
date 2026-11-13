@@ -21,22 +21,21 @@ private data class CloudWorkspaceRecord(
     val module: String,
     val title: String,
     val details: String,
-    @SerialName("local_updated_at") val localUpdatedAt: Long
+    @SerialName("local_updated_at") val localUpdatedAt: Long,
+    @SerialName("is_deleted") val isDeleted: Boolean
 )
 
-/** Two-way sync: newer cloud copies are restored, then local changes are upserted. */
+/** Two-way sync: merge newer cloud records and upload local changes/tombstones. */
 object WorkspaceCloudBackup {
     suspend fun sync(dao: WorkspaceRecordDao): Int = withContext(Dispatchers.IO) {
         val userId = SupabaseProvider.client.auth.currentUserOrNull()?.id
             ?: error("No signed-in account. Sign in before syncing.")
 
         val remote = SupabaseProvider.client.postgrest["workspace_records"]
-            .select {
-                filter { eq("user_id", userId) }
-            }
+            .select { filter { eq("user_id", userId) } }
             .decodeList<CloudWorkspaceRecord>()
 
-        var restored = 0
+        var merged = 0
         remote.forEach { cloud ->
             val existing = dao.findByCloudKey(cloud.recordKey)
             if (existing == null || cloud.localUpdatedAt > existing.updatedAt) {
@@ -47,18 +46,17 @@ object WorkspaceCloudBackup {
                         title = cloud.title,
                         details = cloud.details,
                         cloudKey = cloud.recordKey,
+                        isDeleted = cloud.isDeleted,
                         updatedAt = cloud.localUpdatedAt
                     )
                 )
-                restored++
+                merged++
             }
         }
 
         val local = dao.getAll().map { record ->
             val stableKey = record.cloudKey.ifBlank { UUID.randomUUID().toString() }
-            if (stableKey != record.cloudKey) {
-                dao.upsert(record.copy(cloudKey = stableKey))
-            }
+            if (stableKey != record.cloudKey) dao.upsert(record.copy(cloudKey = stableKey))
             CloudWorkspaceRecord(
                 userId = userId,
                 localId = record.id,
@@ -66,21 +64,19 @@ object WorkspaceCloudBackup {
                 module = record.module,
                 title = record.title,
                 details = record.details,
-                localUpdatedAt = record.updatedAt
+                localUpdatedAt = record.updatedAt,
+                isDeleted = record.isDeleted
             )
         }
 
         if (local.isNotEmpty()) {
-            val jsonArray = Json.encodeToJsonElement(
-                ListSerializer(CloudWorkspaceRecord.serializer()),
-                local
-            ).jsonArray
+            val jsonArray = Json.encodeToJsonElement(ListSerializer(CloudWorkspaceRecord.serializer()), local).jsonArray
             SupabaseProvider.client.postgrest["workspace_records"].insert(
                 jsonArray,
                 upsert = true,
                 onConflict = "user_id,record_key"
             )
         }
-        restored
+        merged
     }
 }
