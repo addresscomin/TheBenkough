@@ -61,6 +61,7 @@ private val IAccent = Color(0xFFDDF27A)
 private data class InvoiceRow(
     val id: String,
     @SerialName("invoice_number") val invoiceNumber: String,
+    @SerialName("client_name") val clientName: String = "",
     @SerialName("subtotal_minor") val subtotalMinor: Long,
     @SerialName("tax_minor") val taxMinor: Long,
     @SerialName("total_minor") val totalMinor: Long,
@@ -101,7 +102,7 @@ fun InvoiceManagerScreen() {
         val selected = pdfPayload
         if (uri != null && selected != null) {
             status = try {
-                writeInvoicePdf(context, uri, selected.first, selected.second, client)
+                writeInvoicePdf(context, uri, selected.first, selected.second)
                 "INVOICE PDF EXPORTED"
             } catch (error: Exception) {
                 "PDF FAILED · ${error.message?.take(55) ?: "TRY AGAIN"}"
@@ -180,6 +181,7 @@ fun InvoiceManagerScreen() {
                                 "id" to JsonPrimitive(invoiceId),
                                 "workspace_id" to JsonPrimitive(workspace.id),
                                 "invoice_number" to JsonPrimitive(number),
+                                "client_name" to JsonPrimitive(client.trim()),
                                 "currency" to JsonPrimitive("INR"),
                                 "subtotal_minor" to JsonPrimitive(subtotal),
                                 "tax_minor" to JsonPrimitive(taxMinor),
@@ -281,7 +283,7 @@ fun InvoiceManagerScreen() {
     }
 }
 
-private fun writeInvoicePdf(context: Context, uri: Uri, invoice: InvoiceRow, lines: List<InvoiceLine>, client: String) {
+private fun writeInvoicePdf(context: Context, uri: Uri, invoice: InvoiceRow, lines: List<InvoiceLine>) {
     val doc = PdfDocument()
     val page = doc.startPage(PdfDocument.PageInfo.Builder(595, 842, 1).create())
     val canvas = page.canvas
@@ -290,7 +292,7 @@ private fun writeInvoicePdf(context: Context, uri: Uri, invoice: InvoiceRow, lin
     val body = Paint(Paint.ANTI_ALIAS_FLAG).apply { textSize = 11f; color = android.graphics.Color.DKGRAY }
     canvas.drawText("THE BENKOUGH", 42f, 58f, title)
     canvas.drawText("INVOICE  ${invoice.invoiceNumber}", 42f, 98f, bold)
-    canvas.drawText("BILL TO: ${client.take(55)}", 42f, 126f, body)
+    canvas.drawText("BILL TO: ${invoice.clientName.take(55)}", 42f, 126f, body)
     canvas.drawText("DATE: ${invoice.issueDate ?: invoice.createdAt.take(10)}", 42f, 148f, body)
     canvas.drawLine(42f, 175f, 552f, 175f, Paint().apply { color = android.graphics.Color.LTGRAY })
     canvas.drawText("DESCRIPTION", 42f, 200f, bold)
