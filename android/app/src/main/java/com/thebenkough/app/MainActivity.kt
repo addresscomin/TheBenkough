@@ -53,6 +53,10 @@ import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.thebenkough.app.feature.auth.PhoneAuthScreen
 import com.thebenkough.app.data.remote.SupabaseProvider
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import io.github.jan.supabase.auth.auth
 import com.thebenkough.app.feature.script.ScriptRoomScreen
 import com.thebenkough.app.feature.workspace.WorkspaceRecordsScreen
@@ -287,7 +291,26 @@ private fun HomeScreen(onCreate: () -> Unit, onBusiness: () -> Unit, onVault: ()
             Text("Open a workspace and add your first record.", color = Lilac, fontSize = 13.sp, lineHeight = 19.sp)
         }
         Text("DESIGNED FOR THE WORK THAT MOVES YOU FORWARD.", color = Lilac.copy(alpha = .65f), fontSize = 9.sp, letterSpacing = 1.3.sp)
+        AdMobTestBanner()
     }
+}
+
+
+@Composable
+private fun AdMobTestBanner() {
+    val context = LocalContext.current
+    LaunchedEffect(Unit) { MobileAds.initialize(context) {} }
+    val adView = remember(context) {
+        AdView(context).apply {
+            adUnitId = "ca-app-pub-3940256099942544/9214589741"
+            setAdSize(AdSize.BANNER)
+            loadAd(AdRequest.Builder().build())
+        }
+    }
+    DisposableEffect(adView) {
+        onDispose { adView.destroy() }
+    }
+    AndroidView(factory = { adView }, modifier = Modifier.fillMaxWidth())
 }
 
 @Composable
