@@ -31,6 +31,8 @@ object WorkspaceCloudBackup {
         val userId = SupabaseProvider.client.auth.currentUserOrNull()?.id
             ?: error("No signed-in account. Sign in before syncing.")
 
+        dao.claimUnowned(userId)
+
         val remote = SupabaseProvider.client.postgrest["workspace_records"]
             .select { filter { eq("user_id", userId) } }
             .decodeList<CloudWorkspaceRecord>()
@@ -55,7 +57,6 @@ object WorkspaceCloudBackup {
             }
         }
 
-        dao.claimUnowned(userId)
         val local = dao.getAll(userId).map { record ->
             val stableKey = record.cloudKey.ifBlank { UUID.randomUUID().toString() }
             if (stableKey != record.cloudKey) dao.upsert(record.copy(cloudKey = stableKey))
