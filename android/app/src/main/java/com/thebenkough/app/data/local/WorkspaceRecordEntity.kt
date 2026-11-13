@@ -11,5 +11,6 @@ data class WorkspaceRecordEntity(
     val title: String,
     val details: String,
     @ColumnInfo(defaultValue = "''") val cloudKey: String = "",
+    @ColumnInfo(defaultValue = "0") val isDeleted: Boolean = false,
     val updatedAt: Long = System.currentTimeMillis()
 )
