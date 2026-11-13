@@ -23,6 +23,10 @@ android {
         versionName = "0.1.0"
         buildConfigField("String", "SUPABASE_URL", "\"https://gqugbuvknmdbmnojpmbr.supabase.co\"")
         buildConfigField("String", "SUPABASE_PUBLISHABLE_KEY", "\"sb_publishable_uhDy1U2vs9vpF2BuvTzbGQ_4U7-N3kx\"")
+        buildConfigField("String", "FIREBASE_APP_ID", "\"$benkoughFirebaseAppId\"")
+        buildConfigField("String", "FIREBASE_API_KEY", "\"$benkoughFirebaseApiKey\"")
+        buildConfigField("String", "FIREBASE_PROJECT_ID", "\"$benkoughFirebaseProjectId\"")
+        buildConfigField("String", "FIREBASE_SENDER_ID", "\"$benkoughFirebaseSenderId\"")
     }
 
     compileOptions {
