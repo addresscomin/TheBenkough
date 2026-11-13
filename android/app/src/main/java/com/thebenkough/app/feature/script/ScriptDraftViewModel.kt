@@ -8,6 +8,8 @@ import com.thebenkough.app.data.local.ScriptDraftEntity
 import com.thebenkough.app.data.local.WorkspaceRecordDao
 import com.thebenkough.app.data.local.WorkspaceRecordEntity
 import com.thebenkough.app.data.remote.WorkspaceCloudBackup
+import com.thebenkough.app.data.remote.SupabaseProvider
+import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +35,11 @@ class ScriptDraftViewModel(
 
     init {
         viewModelScope.launch {
+            val userId = SupabaseProvider.client.auth.currentUserOrNull()?.id
+            if (userId == null) {
+                _state.update { it.copy(saveStatus = "SIGN IN TO SAVE YOUR SCRIPT") }
+                return@launch
+            }
             val saved = dao.getDraft()
             if (saved != null) {
                 _state.update { it.copy(title = saved.title, body = saved.body, saveStatus = "SAVED ON THIS DEVICE") }
@@ -63,12 +70,13 @@ class ScriptDraftViewModel(
             val timestamp = System.currentTimeMillis()
             try {
                 dao.saveDraft(ScriptDraftEntity(title = current.title, body = current.body, updatedAt = timestamp))
-                val existing = workspaceDao.findByCloudKey(SCRIPT_CLOUD_KEY)
+                val existing = workspaceDao.findByCloudKey(SCRIPT_CLOUD_KEY, userId)
                 val cloudRecord = WorkspaceRecordEntity(
                     id = existing?.id ?: 0,
                     module = "CREATOR_SCRIPT",
                     title = current.title,
                     details = current.body,
+                    ownerUserId = userId,
                     cloudKey = SCRIPT_CLOUD_KEY,
                     updatedAt = timestamp
                 )
