@@ -150,7 +150,7 @@ fun PhoneAuthScreen(onAuthenticated: () -> Unit) {
                                 } else {
                                     SupabaseProvider.client.auth.verifyPhoneOtp(
                                         type = OtpType.Phone.SMS,
-                                        phoneNumber = normalizedPhone,
+                                        phone = normalizedPhone,
                                         token = otp
                                     )
                                     check(SupabaseProvider.client.auth.currentSessionOrNull() != null) {
