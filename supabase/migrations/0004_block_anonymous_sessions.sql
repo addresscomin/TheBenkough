@@ -9,7 +9,8 @@ BEGIN
   FOREACH t IN ARRAY ARRAY[
     'activity_events','assets','clients','content_items','device_tokens',
     'invoice_items','invoices','leads','notifications','profiles',
-    'projects','tasks','templates','user_preferences','workspace_members','workspaces'
+    'projects','tasks','templates','user_preferences','workspace_members','workspaces',
+    'workspace_records'
   ] LOOP
     EXECUTE format('DROP POLICY IF EXISTS %I ON public.%I', 'benkough_block_anonymous_sessions', t);
     EXECUTE format(
