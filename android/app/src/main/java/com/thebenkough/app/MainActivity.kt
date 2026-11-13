@@ -57,6 +57,7 @@ import com.thebenkough.app.feature.script.ScriptRoomScreen
 import com.thebenkough.app.feature.workspace.WorkspaceRecordsScreen
 import com.thebenkough.app.feature.notifications.NotificationCenterScreen
 import com.thebenkough.app.feature.vault.ProjectVaultScreen
+import com.thebenkough.app.feature.invoice.InvoiceManagerScreen
 
 private val Plum = Color(0xFF211329)
 private val Ink = Color(0xFF17101E)
@@ -184,7 +185,7 @@ private fun BenkoughApp() {
                     Destination.LEADS -> RecordsPage("LEADS", "LEAD TRACKER", "Record prospects, follow-up dates and next actions.", "Lead or business name", "Source, contact, follow-up date and next step…")
                     Destination.PROJECTS -> RecordsPage("PROJECTS", "PROJECT REGISTER", "Track project scope, milestones and current status.", "Project name", "Scope, deadline, budget and status…")
                     Destination.TASKS -> RecordsPage("TASKS", "TASK BOARD", "Keep work items, due dates and completion notes.", "Task name", "Due date, priority and task details…")
-                    Destination.INVOICES -> RecordsPage("INVOICES", "INVOICE RECORDS", "Store invoice references and payment notes. PDF generation and payment collection are not connected yet.", "Invoice number or client", "Amount, due date, items and payment status…")
+                    Destination.INVOICES -> InvoiceManagerScreen()
                 }
             }
             BottomRail(selected = destination, onSelect = { destination = it })
