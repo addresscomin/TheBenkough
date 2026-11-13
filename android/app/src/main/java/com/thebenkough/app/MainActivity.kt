@@ -137,7 +137,8 @@ private fun BenkoughApp() {
                     Destination.HOME -> HomeScreen(
                         onCreate = { destination = Destination.CREATOR_HUB },
                         onBusiness = { destination = Destination.BUSINESS_HUB },
-                        onVault = { destination = Destination.VAULT_HUB }
+                        onVault = { destination = Destination.VAULT_HUB },
+                        onNotifications = { destination = Destination.NOTIFICATIONS }
                     )
                     Destination.CREATOR_HUB -> HubScreen(
                         eyebrow = "01 / CREATOR STUDIO",
@@ -169,6 +170,7 @@ private fun BenkoughApp() {
                         ),
                         onOpen = { destination = it }
                     )
+                    Destination.NOTIFICATIONS -> NotificationCenterScreen()
                     Destination.VAULT_HUB -> ProjectVaultScreen()
                     Destination.ASSETS -> ProjectVaultScreen()
                     Destination.SCRIPT -> ScriptRoomScreen()
