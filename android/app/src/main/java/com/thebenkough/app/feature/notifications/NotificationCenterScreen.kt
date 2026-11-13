@@ -49,11 +49,11 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-private val NInk = Color(0xFF17101E)
-private val NPanel = Color(0xFF211329)
-private val NText = Color(0xFFF2E9DE)
-private val NMuted = Color(0xFFB7A7C9)
-private val NAccent = Color(0xFFDDF27A)
+private val NInk = Color(0xFF050608)
+private val NPanel = Color(0xCC111922)
+private val NText = Color(0xFFF4F7FB)
+private val NMuted = Color(0xFF929EAD)
+private val NAccent = Color(0xFF77E6D2)
 private const val CHANNEL_ID = "benkough_updates"
 
 @Serializable
@@ -163,7 +163,7 @@ fun NotificationCenterScreen() {
         } else {
             items.forEach { item ->
                 Column(
-                    modifier = Modifier.fillMaxWidth().background(NPanel, RoundedCornerShape(4.dp))
+                    modifier = Modifier.fillMaxWidth().background(NPanel, RoundedCornerShape(18.dp))
                         .clickable {
                             if (item.readAt == null) {
                                 scope.launch {
