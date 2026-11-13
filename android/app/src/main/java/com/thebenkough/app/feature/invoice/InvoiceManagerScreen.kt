@@ -111,7 +111,7 @@ fun InvoiceManagerScreen() {
         pdfPayload = null
     }
 
-    suspend fun loadInvoices() {
+    suspend fun loadInvoices(): InvoiceRow? {
         val userId = SupabaseProvider.client.auth.currentUserOrNull()?.id ?: error("Sign in to access invoices.")
         val workspace = SupabaseProvider.client.postgrest["workspaces"]
             .select { filter { eq("owner_id", userId) } }
@@ -122,6 +122,7 @@ fun InvoiceManagerScreen() {
             .decodeList<InvoiceRow>()
             .sortedByDescending { it.createdAt }
         status = "${invoices.size} INVOICES · CLOUD ACCOUNT"
+        return invoices.firstOrNull()
     }
 
     LaunchedEffect(Unit) {
@@ -180,8 +181,12 @@ fun InvoiceManagerScreen() {
                             unitPrice = ""
                             quantity = "1"
                             taxPercent = "0"
-                            loadInvoices()
-                            status = "CREATED · $number · ₹${"%.2f".format(Locale.US, total / 100.0)}"
+                            val createdInvoice = loadInvoices()
+                            status = if (createdInvoice != null) {
+                                "CREATED · ${createdInvoice.invoiceNumber} · ₹${"%.2f".format(Locale.US, createdInvoice.totalMinor / 100.0)}"
+                            } else {
+                                "INVOICE CREATED · REGISTER REFRESHED"
+                            }
                         } catch (error: Exception) {
                             status = "CREATE FAILED · ${error.message?.take(65) ?: "TRY AGAIN"}"
                         } finally { busy = false }
