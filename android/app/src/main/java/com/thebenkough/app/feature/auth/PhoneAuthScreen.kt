@@ -140,7 +140,7 @@ fun AccountAuthScreen(onAuthenticated: () -> Unit) {
                                         "Signup received, but Supabase Confirm email is still enabled. Turn it off before using username-only accounts."
                                     }
                                 } else {
-                                    auth.signInWith(Email) {
+                                    auth.loginWith(Email) {
                                         email = authEmailFor(cleanUsername)
                                         this.password = password
                                     }
