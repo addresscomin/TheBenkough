@@ -5,6 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.thebenkough.app.data.local.ScriptDraftDao
 import com.thebenkough.app.data.local.ScriptDraftEntity
+import com.thebenkough.app.data.local.WorkspaceRecordDao
+import com.thebenkough.app.data.local.WorkspaceRecordEntity
+import com.thebenkough.app.data.remote.WorkspaceCloudBackup
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,10 +22,12 @@ data class ScriptDraftUiState(
     val saveStatus: String = "LOADING DRAFT"
 )
 
-class ScriptDraftViewModel(private val dao: ScriptDraftDao) : ViewModel() {
+class ScriptDraftViewModel(
+    private val dao: ScriptDraftDao,
+    private val workspaceDao: WorkspaceRecordDao
+) : ViewModel() {
     private val _state = MutableStateFlow(ScriptDraftUiState())
     val state: StateFlow<ScriptDraftUiState> = _state.asStateFlow()
-
     private var loaded = false
     private var saveJob: Job? = null
 
@@ -30,9 +35,7 @@ class ScriptDraftViewModel(private val dao: ScriptDraftDao) : ViewModel() {
         viewModelScope.launch {
             val saved = dao.getDraft()
             if (saved != null) {
-                _state.update {
-                    it.copy(title = saved.title, body = saved.body, saveStatus = "SAVED ON THIS DEVICE")
-                }
+                _state.update { it.copy(title = saved.title, body = saved.body, saveStatus = "SAVED ON THIS DEVICE") }
             } else {
                 _state.update { it.copy(saveStatus = "NEW LOCAL DRAFT") }
             }
@@ -55,31 +58,47 @@ class ScriptDraftViewModel(private val dao: ScriptDraftDao) : ViewModel() {
         saveJob?.cancel()
         _state.update { it.copy(saveStatus = "SAVING…") }
         saveJob = viewModelScope.launch {
-            delay(450)
+            delay(650)
             val current = _state.value
+            val timestamp = System.currentTimeMillis()
             try {
-                dao.saveDraft(
-                    ScriptDraftEntity(
-                        title = current.title,
-                        body = current.body,
-                        updatedAt = System.currentTimeMillis()
-                    )
+                dao.saveDraft(ScriptDraftEntity(title = current.title, body = current.body, updatedAt = timestamp))
+                val existing = workspaceDao.findByCloudKey(SCRIPT_CLOUD_KEY)
+                val cloudRecord = WorkspaceRecordEntity(
+                    id = existing?.id ?: 0,
+                    module = "CREATOR_SCRIPT",
+                    title = current.title,
+                    details = current.body,
+                    cloudKey = SCRIPT_CLOUD_KEY,
+                    updatedAt = timestamp
                 )
-                _state.update { it.copy(saveStatus = "SAVED ON THIS DEVICE") }
+                workspaceDao.upsert(cloudRecord)
+                _state.update { it.copy(saveStatus = "SAVED ON DEVICE · SYNCING CLOUD…") }
+                try {
+                    WorkspaceCloudBackup.sync(workspaceDao)
+                    _state.update { it.copy(saveStatus = "SAVED + SYNCED TO CLOUD") }
+                } catch (_: Exception) {
+                    _state.update { it.copy(saveStatus = "SAVED ON DEVICE · CLOUD SYNC WHEN ONLINE") }
+                }
             } catch (_: Exception) {
                 _state.update { it.copy(saveStatus = "SAVE FAILED — TRY AGAIN") }
             }
         }
     }
+
+    companion object {
+        private const val SCRIPT_CLOUD_KEY = "benkough-creator-script-main"
+    }
 }
 
 class ScriptDraftViewModelFactory(
-    private val dao: ScriptDraftDao
+    private val dao: ScriptDraftDao,
+    private val workspaceDao: WorkspaceRecordDao
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ScriptDraftViewModel::class.java)) {
-            return ScriptDraftViewModel(dao) as T
+            return ScriptDraftViewModel(dao, workspaceDao) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
