@@ -1,18 +1,10 @@
 name: Android build
 
 on:
-  push:
-    branches: [android-foundation, main]
-    paths:
-      - "android/**"
-      - ".github/workflows/android-build.yml"
-  pull_request:
-    paths:
-      - "android/**"
-      - ".github/workflows/android-build.yml"
+  workflow_dispatch:
 
 concurrency:
-  group: android-build-${{ github.ref }}
+  group: android-final-build
   cancel-in-progress: false
 
 jobs:
