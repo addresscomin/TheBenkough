@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -58,6 +59,7 @@ import com.thebenkough.app.feature.workspace.WorkspaceRecordsScreen
 import com.thebenkough.app.feature.notifications.NotificationCenterScreen
 import com.thebenkough.app.feature.vault.ProjectVaultScreen
 import com.thebenkough.app.feature.invoice.InvoiceManagerScreen
+import com.thebenkough.app.data.remote.PushRegistration
 
 private val Plum = Color(0xFF211329)
 private val Ink = Color(0xFF17101E)
@@ -97,6 +99,7 @@ private enum class Destination(val label: String) {
 
 @Composable
 private fun BenkoughApp() {
+    val appContext = LocalContext.current
     var destination by rememberSaveable { mutableStateOf(Destination.HOME) }
     var authChecked by rememberSaveable { mutableStateOf(false) }
     var authenticated by rememberSaveable { mutableStateOf(false) }
@@ -108,6 +111,10 @@ private fun BenkoughApp() {
             false
         }
         authChecked = true
+    }
+
+    LaunchedEffect(authenticated) {
+        if (authenticated) runCatching { PushRegistration.registerCurrentDevice(appContext) }
     }
 
     if (!authChecked) {
