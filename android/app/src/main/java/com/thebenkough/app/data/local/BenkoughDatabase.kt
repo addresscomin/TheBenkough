@@ -9,7 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [ScriptDraftEntity::class, WorkspaceRecordEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class BenkoughDatabase : RoomDatabase() {
@@ -33,13 +33,20 @@ abstract class BenkoughDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE workspace_records ADD COLUMN cloudKey TEXT NOT NULL DEFAULT ''")
+                db.execSQL("UPDATE workspace_records SET cloudKey = lower(hex(randomblob(16))) WHERE cloudKey = ''")
+            }
+        }
+
         fun getInstance(context: Context): BenkoughDatabase =
             INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
                     BenkoughDatabase::class.java,
                     "benkough-local.db"
-                ).addMigrations(MIGRATION_1_2).build().also { INSTANCE = it }
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build().also { INSTANCE = it }
             }
     }
 }
