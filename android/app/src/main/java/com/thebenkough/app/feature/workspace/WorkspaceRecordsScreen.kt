@@ -39,6 +39,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import com.thebenkough.app.data.local.BenkoughDatabase
 import com.thebenkough.app.data.local.WorkspaceRecordEntity
 import com.thebenkough.app.data.remote.WorkspaceCloudBackup
+import com.thebenkough.app.data.remote.SupabaseProvider
+import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -62,7 +64,8 @@ fun WorkspaceRecordsScreen(
 ) {
     val context = LocalContext.current
     val dao = remember(context) { BenkoughDatabase.getInstance(context).workspaceRecordDao() }
-    val records by dao.observeModule(module).collectAsState(initial = emptyList())
+    val userId = SupabaseProvider.client.auth.currentUserOrNull()?.id.orEmpty()
+    val records by dao.observeModule(module, userId).collectAsState(initial = emptyList())
     val scope = rememberCoroutineScope()
     var entryTitle by rememberSaveable(module) { mutableStateOf("") }
     var entryDetails by rememberSaveable(module) { mutableStateOf("") }
@@ -113,6 +116,7 @@ fun WorkspaceRecordsScreen(
                             module = module,
                             title = cleanTitle,
                             details = entryDetails.trim(),
+                            ownerUserId = userId,
                             cloudKey = UUID.randomUUID().toString()
                         ))
                         entryTitle = ""
@@ -204,7 +208,7 @@ fun WorkspaceRecordsScreen(
                         }
                         Button(onClick = {
                             scope.launch {
-                                dao.softDelete(record.id)
+                                dao.softDelete(record.id, userId)
                                 message = "ENTRY REMOVED · SYNC TO PROPAGATE DELETE"
                             }
                         }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF482633), contentColor = Color(0xFFFFD6D6)),
