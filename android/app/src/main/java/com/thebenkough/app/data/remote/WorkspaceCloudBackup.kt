@@ -37,7 +37,7 @@ object WorkspaceCloudBackup {
 
         var merged = 0
         remote.forEach { cloud ->
-            val existing = dao.findByCloudKey(cloud.recordKey)
+            val existing = dao.findByCloudKey(cloud.recordKey, userId)
             if (existing == null || cloud.localUpdatedAt > existing.updatedAt) {
                 dao.upsert(
                     WorkspaceRecordEntity(
@@ -45,6 +45,7 @@ object WorkspaceCloudBackup {
                         module = cloud.module,
                         title = cloud.title,
                         details = cloud.details,
+                        ownerUserId = userId,
                         cloudKey = cloud.recordKey,
                         isDeleted = cloud.isDeleted,
                         updatedAt = cloud.localUpdatedAt
@@ -54,7 +55,8 @@ object WorkspaceCloudBackup {
             }
         }
 
-        val local = dao.getAll().map { record ->
+        dao.claimUnowned(userId)
+        val local = dao.getAll(userId).map { record ->
             val stableKey = record.cloudKey.ifBlank { UUID.randomUUID().toString() }
             if (stableKey != record.cloudKey) dao.upsert(record.copy(cloudKey = stableKey))
             CloudWorkspaceRecord(
