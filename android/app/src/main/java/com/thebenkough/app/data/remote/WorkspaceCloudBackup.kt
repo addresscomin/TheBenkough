@@ -71,11 +71,9 @@ object WorkspaceCloudBackup {
 
         if (local.isNotEmpty()) {
             val jsonArray = Json.encodeToJsonElement(ListSerializer(CloudWorkspaceRecord.serializer()), local).jsonArray
-            SupabaseProvider.client.postgrest["workspace_records"].insert(
-                jsonArray,
-                upsert = true,
+            SupabaseProvider.client.postgrest["workspace_records"].upsert(jsonArray) {
                 onConflict = "user_id,record_key"
-            )
+            }
         }
         merged
     }
