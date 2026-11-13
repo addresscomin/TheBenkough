@@ -42,7 +42,7 @@ object ProjectVaultRepository {
     }
 
     suspend fun listAssets(): List<VaultAsset> = withContext(Dispatchers.IO) {
-        val (userId, workspaceId) = identity()
+        val (_, workspaceId) = identity()
         SupabaseProvider.client.postgrest["assets"]
             .select { filter { eq("workspace_id", workspaceId) } }
             .decodeList<VaultAsset>()
@@ -59,7 +59,9 @@ object ProjectVaultRepository {
 
         val safeName = name.replace(Regex("[^A-Za-z0-9._-]"), "_").take(100).ifBlank { "asset.bin" }
         val path = "$workspaceId/$userId/${UUID.randomUUID()}-$safeName"
-        SupabaseProvider.client.storage.from(VAULT_BUCKET).upload(path, bytes, upsert = false)
+        SupabaseProvider.client.storage.from(VAULT_BUCKET).upload(path, bytes) {
+            upsert = false
+        }
 
         val metadata = JsonObject(
             mapOf(
