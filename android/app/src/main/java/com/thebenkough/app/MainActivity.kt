@@ -46,6 +46,7 @@ import com.thebenkough.app.data.remote.SupabaseProvider
 import io.github.jan.supabase.auth.auth
 import com.thebenkough.app.feature.script.ScriptRoomScreen
 import com.thebenkough.app.feature.workspace.WorkspaceRecordsScreen
+import com.thebenkough.app.feature.notifications.NotificationCenterScreen
 
 private val Plum = Color(0xFF211329)
 private val Ink = Color(0xFF17101E)
@@ -64,6 +65,7 @@ class MainActivity : ComponentActivity() {
 
 private enum class Destination(val label: String) {
     HOME("HOME"),
+    NOTIFICATIONS("INBOX"),
     CREATOR_HUB("CREATE"),
     BUSINESS_HUB("BUSINESS"),
     VAULT_HUB("VAULT"),
@@ -239,7 +241,7 @@ private fun HubScreen(
 }
 
 @Composable
-private fun HomeScreen(onCreate: () -> Unit, onBusiness: () -> Unit, onVault: () -> Unit) {
+private fun HomeScreen(onCreate: () -> Unit, onBusiness: () -> Unit, onVault: () -> Unit, onNotifications: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize().background(Ink).verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp).padding(top = 28.dp, bottom = 24.dp),
@@ -250,7 +252,7 @@ private fun HomeScreen(onCreate: () -> Unit, onBusiness: () -> Unit, onVault: ()
                 Text("THE BENKOUGH®", color = Ivory, fontSize = 15.sp, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
                 Text("CREATIVE BUSINESS SYSTEM", color = Lilac, fontSize = 9.sp, letterSpacing = 2.2.sp)
             }
-            Text("BK / 001", color = Lilac, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+            Text("INBOX  ↗", color = Lime, fontSize = 10.sp, fontWeight = FontWeight.Bold, modifier = Modifier.clickable(onClick = onNotifications))
         }
         Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
             Text("CREATE.", color = Ivory, fontSize = 48.sp, lineHeight = 48.sp, fontWeight = FontWeight.Black, letterSpacing = (-2).sp)
