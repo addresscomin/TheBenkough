@@ -9,7 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [ScriptDraftEntity::class, WorkspaceRecordEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class BenkoughDatabase : RoomDatabase() {
@@ -40,13 +40,19 @@ abstract class BenkoughDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE workspace_records ADD COLUMN isDeleted INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
         fun getInstance(context: Context): BenkoughDatabase =
             INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
                     BenkoughDatabase::class.java,
                     "benkough-local.db"
-                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build().also { INSTANCE = it }
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build().also { INSTANCE = it }
             }
     }
 }
